@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "seasideapi2"
+version = "0.1.0"
+description = "The second iteration of the SeasideFM API"
+authors = ["Duke_Ferdinand <doug@dougflynn.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.100.0"
+pymongo = "^4.4.1"
+pydantic = "^2.0.3"
+uvicorn = "^0.23.0"
+python-dotenv = "^1.0.0"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
