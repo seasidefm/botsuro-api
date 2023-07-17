@@ -32,6 +32,17 @@ app.add_middleware(IdentityMiddleware, protected_routes=protected_routes)
 
 # Information
 # ===================
+@app.get("/")
+def root_information():
+    """
+    Simple health check
+    :return:
+    """
+    return {
+        "about": "This is the API for SeasideFM's Botsuro Yamashita!",
+    }
+
+
 @app.get("/health")
 def health_check():
     """
