@@ -78,7 +78,7 @@ def discogs_price(album: str, artist: str, year: Optional[int] = None):
     return {"data": search_results}
 
 
-@app.get("/weather", response_model=WeatherModel)
+@app.get("/weather")
 def weather_for_lat_long(latitude: float, longitude: float):
     """
     Attempt to get the weather for given coordinates
