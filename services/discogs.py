@@ -55,7 +55,16 @@ class DiscogsApi:
             timeout=15
         )
 
-        return res.status_code == 200
+        logger.info("Discogs status code: %s", res.status_code)
+
+        if res.status_code == 200:
+            reason = "OKAY"
+        elif res.status_code == 429:
+            reason = "Received rate limiting 429"
+        else:
+            reason = "Discogs services are down"
+
+        return (res.status_code == 200, reason)
 
     def album_marketplace_data(self,
                                album: str, artist: str,

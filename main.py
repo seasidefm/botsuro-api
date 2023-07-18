@@ -49,10 +49,16 @@ def health_check():
     Simple health check
     :return:
     """
+
+    discogs_okay, reason = services.discogs_api.health_check()
+
     return {
-        "discogs": "OK"
-                   if services.discogs_api.health_check() else "DEGRADED",
-        "database": "OK"
+        "discogs": {
+            "status": "OK"
+                   if discogs_okay else "DEGRADED",
+            "reason": reason
+        },
+        "database": "OK",
     }
 
 
