@@ -21,6 +21,7 @@ def release_to_dict(release: discogs_client.Release) -> dict:
         }
     }
 
+
 def release_has_results(release: discogs_client.Release) -> bool:
     return release.marketplace_stats.num_for_sale is not None and release.marketplace_stats.num_for_sale > 0
 
@@ -84,6 +85,7 @@ class DiscogsApi:
         releases = self.client.search(
             f"{artist} {album}",
             type="release",
+            per_page=5
         )
 
         rel_with_listings = filter(lambda release: release_has_results(release), releases)
