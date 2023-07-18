@@ -2,14 +2,24 @@
 Services related to discogs
 """
 import logging
-import urllib.parse
-from typing import Optional
+from typing import Optional, List
 
 import requests
-
-from models.discogs import DiscogsSearchModel
+import discogs_client
 
 logger = logging.getLogger("botsuro-api")
+
+
+def release_to_dict(release: discogs_client.Release) -> dict:
+    mp_stats = release.marketplace_stats
+    return {
+        "title": release.title,
+        "year": release.year,
+        "marketplace_stats": {
+            "num_for_sale": mp_stats.num_for_sale,
+            "lowest_price": f"{mp_stats.lowest_price.value} {mp_stats.lowest_price.currency}",
+        }
+    }
 
 
 class DiscogsApi:
@@ -24,6 +34,9 @@ class DiscogsApi:
                  ):
         self.access_token = access_token
         self.user_agent = user_agent
+        self.client = discogs_client.Client(
+            user_agent=user_agent, user_token=access_token
+        )
 
     def _get_headers(self):
         return {
@@ -44,52 +57,23 @@ class DiscogsApi:
 
         return res.status_code == 200
 
-    def artist_album_search(self,
-                            album: str, artist: str,
-                            year: Optional[int], media="album"):
+    def album_marketplace_data(self,
+                               album: str, artist: str,
+                               year: Optional[int]) -> List[dict]:
         """
         Search discogs for albums and artists matching this
         :param artist:
         :param album:
         :param year:
-        :param media:
+
         :return:
         """
 
-        url = f"{self.base_url}/database/search?release_title={urllib.parse.quote(album)}" \
-              f"&artist={urllib.parse.quote(artist)}" \
-              f"{f'&year={year}' if year else ''}&format={media}"
-
-        logger.info(url)
-
-        res = requests.get(
-            headers=self._get_headers(),
-            url=url,
-            timeout=15
+        releases = self.client.search(
+            f"{artist} {album}",
+            type="release",
         )
 
-        if res.status_code != 200:
-            logger.error(res.text)
-            raise requests.HTTPError(f"Got code {res.status_code} for album search!")
+        rel_with_listings = filter(lambda result: result.marketplace_stats.num_for_sale > 0, releases)
 
-        return DiscogsSearchModel(**res.json())
-
-    def get_release_marketplace_data(self, release_id: int, currency="USD"):
-        """
-        Using a discogs release ID, get marketplace information
-        :param release_id:
-        :param currency:
-        :return:
-        """
-
-        res = requests.get(
-            headers=self._get_headers(),
-            url=f"{self.base_url}/marketplace/stats/{release_id}?curr_abbr={currency}",
-            timeout=15
-        )
-
-        if res.status_code != 200:
-            logger.error(res.text)
-            raise requests.HTTPError(f"Got code {res.status_code} for marketplace search!")
-
-        return res.json()
+        return [release_to_dict(release) for release in rel_with_listings]

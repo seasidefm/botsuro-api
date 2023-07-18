@@ -65,17 +65,8 @@ def discogs_price(album: str, artist: str, year: Optional[int] = None):
     :return:
     """
 
-    logger.info(f"Received price request for {album}{f' ({year})' if year else ''} by {artist}")
-
-    discogs_search = services.discogs_api.artist_album_search(album, artist, year)
-
-    if not discogs_search.results:
-        return {
-            "error": f"No listings found for {album}{f' ({year})' if year else ''} by {artist}"
-        }
-
-    marketplace_summary = services.discogs_api.get_release_marketplace_data(
-        discogs_search.results[0].id
+    search_results = services.discogs_api.album_marketplace_data(
+        album, artist, year
     )
 
-    return marketplace_summary
+    return {"data": search_results}
