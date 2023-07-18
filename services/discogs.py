@@ -21,6 +21,9 @@ def release_to_dict(release: discogs_client.Release) -> dict:
         }
     }
 
+def release_has_results(release: discogs_client.Release) -> bool:
+    return release.marketplace_stats.num_for_sale is not None and release.marketplace_stats.num_for_sale > 0
+
 
 class DiscogsApi:
     """
@@ -64,7 +67,7 @@ class DiscogsApi:
         else:
             reason = "Discogs services are down"
 
-        return (res.status_code == 200, reason)
+        return res.status_code == 200, reason
 
     def album_marketplace_data(self,
                                album: str, artist: str,
@@ -83,6 +86,6 @@ class DiscogsApi:
             type="release",
         )
 
-        rel_with_listings = filter(lambda result: result.marketplace_stats.num_for_sale > 0, releases)
+        rel_with_listings = filter(lambda release: release_has_results(release), releases)
 
         return [release_to_dict(release) for release in rel_with_listings]
