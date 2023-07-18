@@ -14,4 +14,4 @@ class OpenWeatherApi:
 
         data = requests.get(formatted_url)
 
-        return WeatherData(**data.json())
+        return data.json()
