@@ -7,6 +7,7 @@ import fastapi
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
 from models.discogs import DiscogsSearchModel
+from models.weather import WeatherModel
 from services import Services
 
 # Config
@@ -25,7 +26,6 @@ app = fastapi.FastAPI()
 protected_routes = [
     "/search/discogs"
 ]
-
 
 app.add_middleware(IdentityMiddleware, protected_routes=protected_routes)
 
@@ -55,7 +55,7 @@ def health_check():
     return {
         "discogs": {
             "status": "OK"
-                   if discogs_okay else "DEGRADED",
+            if discogs_okay else "DEGRADED",
             "reason": reason
         },
         "database": "OK",
@@ -76,3 +76,13 @@ def discogs_price(album: str, artist: str, year: Optional[int] = None):
     )
 
     return {"data": search_results}
+
+
+@app.get("/weather", response_model=WeatherModel)
+def weather_for_lat_long(latitude: float, longitude: float):
+    """
+    Attempt to get the weather for given coordinates
+    :return:
+    """
+
+    return {"data": services.weather.get_weather_for_coords(latitude, longitude)}
