@@ -1,6 +1,6 @@
 from logging import getLogger
 from logging.config import dictConfig
-from typing import Optional
+from typing import Optional, List
 
 import fastapi
 
@@ -21,7 +21,7 @@ logger = getLogger("botsuro-api")
 logger.info("Starting botsuro api!")
 
 services = Services()
-app = fastapi.FastAPI()
+app = fastapi.FastAPI(docs_url="/docs", redoc_url="/redoc")
 
 protected_routes = [
     "/search/discogs"
@@ -79,10 +79,10 @@ def discogs_price(album: str, artist: str, year: Optional[int] = None):
 
 
 @app.get("/weather")
-def weather_for_lat_long(latitude: float, longitude: float):
+def weather_for_lat_long(latitude: float, longitude: float, options: str):
     """
     Attempt to get the weather for given coordinates
     :return:
     """
 
-    return {"data": services.weather.get_weather_for_coords(latitude, longitude)}
+    return {"data": services.weather.get_weather_for_coords(latitude, longitude, options.split(","))}
