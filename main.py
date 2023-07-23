@@ -6,8 +6,6 @@ import fastapi
 
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
-from models.discogs import DiscogsSearchModel
-from models.weather import WeatherModel
 from services import Services
 
 # Config
@@ -60,6 +58,45 @@ def health_check():
         },
         "database": "OK",
     }
+
+
+# Song ID API Proxy
+# ===================
+@app.get("/song")
+def song_id_proxy(song_id: str):
+    """
+    Get the song ID for a given song
+    :param song_id:
+    :return:
+    """
+
+    return {"test": "test"}
+
+    # return services.song_id.get_song_id(song_id)
+
+
+# Fave system v2
+# ===================
+@app.get("/faves")
+def faves_for_user(user: str):
+    """
+    Get the faves for a given user
+    :param user:
+    :return:
+    """
+
+    return services.faves.get_faves_for_user(user)
+
+
+@app.get("/superfaves")
+def superfaves_for_user(user: str):
+    """
+    Get the superfaves for a given user
+    :param user:
+    :return:
+    """
+
+    return services.faves.get_superfaves_for_user(user)
 
 
 # AI Function callbacks
