@@ -1,9 +1,11 @@
+import json
 from logging import getLogger
 from logging.config import dictConfig
 from typing import Optional, List
 
 import fastapi
 
+import prompts
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
 from services import Services
@@ -49,11 +51,17 @@ def health_check():
     """
 
     discogs_okay, reason = services.discogs_api.health_check()
+    song_id_okay, reason = services.song_id.health_check()
 
     return {
         "discogs": {
             "status": "OK"
             if discogs_okay else "DEGRADED",
+            "reason": reason
+        },
+        "song_id": {
+            "status": "OK"
+            if song_id_okay else "DEGRADED",
             "reason": reason
         },
         "database": "OK",
@@ -63,16 +71,19 @@ def health_check():
 # Song ID API Proxy
 # ===================
 @app.get("/song")
-def song_id_proxy(song_id: str):
+def song_id_proxy(creator: str):
     """
     Get the song ID for a given song
-    :param song_id:
+    :param creator:
     :return:
     """
 
-    return {"test": "test"}
+    song_id = services.song_id.get_song_id(creator)
+    normalized = services.data_norm.normalize(
+        prompts.SONG_ID_NORMALIZATION, json.dumps(song_id)
+    )
 
-    # return services.song_id.get_song_id(song_id)
+    return normalized
 
 
 # Fave system v2
