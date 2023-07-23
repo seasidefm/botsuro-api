@@ -1,5 +1,10 @@
 SONG_ID_NORMALIZATION = """
-Please extract song information from the following JSON payloads. Only respond using JSON with no extra text.
+Please extract song information from the following JSON payloads. Only respond using JSON with no extra text. When considering song identification, please use the following priority:
+
+1. ACRCloud ("acr" key)
+2. Audd.io ("audd" key)
+3. Shazam ("shazam" key)
+4. Any other service in the future
 
 Please respond in JSON format using the following schema for a match:
 
