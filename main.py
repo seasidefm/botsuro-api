@@ -79,11 +79,33 @@ def song_id_proxy(creator: str):
     """
 
     song_id = services.song_id.get_song_id(creator)
+    # cached = services.cache.get(f"song_id:{creator}")
+
     normalized = services.data_norm.normalize(
         prompts.SONG_ID_NORMALIZATION, json.dumps(song_id)
     )
 
-    return normalized
+    # if cached is not None:
+    #     eq = services.data_norm.check_equivalence(
+    #         json.dumps(normalized), cached
+    #     )
+    #
+    #     logger.debug(eq
+    #                  )
+    #
+    #     if eq.get("equivalent"):
+    #         return {
+    #             **json.loads(cached),
+    #             "changed": False,
+    #         }
+    #     else: logger.info("Song ID changed for %s", creator)
+    #
+
+    services.cache.set(f"song_id:{creator}", json.dumps(normalized))
+    return {
+        **normalized,
+        "changed": True,
+    }
 
 
 # Fave system v2

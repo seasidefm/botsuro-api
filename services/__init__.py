@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+from .Cache import Cache
 from .DataNormalizations import DataNormalization
 from .FaveSystem import FaveSystem
 from .OpenWeather import OpenWeatherApi
@@ -31,6 +32,11 @@ class Services:
 
         # Services that require a special token or setup
         # =============================================
+        if cache_uri := os.getenv("REDIS_URL"):
+            self.cache = Cache(cache_uri)
+        else:
+            raise EnvironmentError("REDIS_URL not found in env")
+
         if discogs_token := os.getenv("DISCOGS_ACCESS_TOKEN"):
             self.discogs_api = DiscogsApi(discogs_token)
         else:

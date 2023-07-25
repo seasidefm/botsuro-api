@@ -4,11 +4,23 @@ import openai
 
 MODEL: str = "gpt-3.5-turbo"
 
+EQ_PROMPT = """
+Are these song JSON objects referring to more or less the same song? If the album is different please ignore that. Focus on the song and artist.
+
+Please respond using the following format:
+
+{
+  "equivalent": <JSON Boolean>,
+"confidence": <percentage string>
+}
+"""
+
 
 class DataNormalization:
     """
     API wrapper for connecting to OpenAI's Data Normalization API
     """
+
     def __init__(self, openai_token: str):
         self.model = MODEL
         self.openai_token = openai_token
@@ -16,6 +28,22 @@ class DataNormalization:
 
     def health_check(self):
         return True, "OK"
+
+    def check_equivalence(self, data1: str, data2: str):
+        """
+        Check if two strings are equivalent
+        :param data1:
+        :param data2:
+        :return:
+        """
+
+        chat_completion = openai.ChatCompletion.create(
+            model=self.model,
+            max_tokens=100,
+            messages=[{"role": "system", "content": EQ_PROMPT}, {"role": "user", "content": f"{data1}\n\n{data2}"}],
+        )
+
+        return json.loads(chat_completion.choices[0].message.content)
 
     def normalize(self, prompt: str, data: str):
         """
