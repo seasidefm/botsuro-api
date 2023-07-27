@@ -1,3 +1,7 @@
+"""
+The main entrypoint for the botsuro api
+"""
+
 import json
 from logging import getLogger
 from logging.config import dictConfig
@@ -111,12 +115,15 @@ def song_id_proxy(creator: str):
 
 
 @app.get("/obs/song")
-def obs_song_id_proxy(request: fastapi.Request, creator: str):
+def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Optional[int] = 10):
     """
     Render the template for the song ID for a given song
+    :param request:
     :param creator:
+    :param refresh_time:
     :return:
     """
+
     if cached := services.cache.get(f"song_id:{creator}"):
         loaded = json.loads(cached)
         if loaded.get("error"):
@@ -131,6 +138,7 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str):
         {
             "request": request,
             "song_string": song_string,
+            "refresh_time": refresh_time,
         })
 
 
@@ -180,5 +188,4 @@ def weather_for_lat_long(latitude: float, longitude: float, options: str):
     Attempt to get the weather for given coordinates
     :return:
     """
-
     return {"data": services.weather.get_weather_for_coords(latitude, longitude, options.split(","))}

@@ -1,9 +1,7 @@
 """
-
+Song History access
 """
-
-from pydantic import BaseModel
-from typing import Optional, Mapping, Any, Dict
+from typing import Optional, Mapping, Any
 
 from pydantic import BaseModel
 from pymongo.database import Database

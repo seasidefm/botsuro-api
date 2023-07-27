@@ -4,18 +4,25 @@
     body * {
         color: white;
     }
+
     .scroll-container {
-      /* Set the width and height to control the size of the container */
-      width: 100vw;
-      height: 100vh;
-      /* Add any other desired styles for the container */
-      overflow: hidden; /* Hide overflowing content */
-      padding-bottom: 25px;
-      background: green;
+        /* Set the width and height to control the size of the container */
+        width: 100vw;
+        height: 100vh;
+        /* Add any other desired styles for the container */
+        overflow: hidden; /* Hide overflowing content */
+        /*background: green;*/
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
     }
 
-    .song-string {
+    #song-string {
         font-size: 48px;
+        /* font aliasing for smoothness below */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        margin-left: auto;
     }
 
     .scrolling-text {
@@ -37,6 +44,11 @@
 
 </style>
 <div class="scroll-container">
-    <p class="song-string">{{ song_string }}</p>
+    <p id="song-string">{{ song_string }}</p>
 </div>
+<script>
+    setTimeout(function() {
+        window.location.reload();
+    }, {{ refresh_time }} * 1000);
+</script>
 {% endblock %}
