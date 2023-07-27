@@ -40,7 +40,10 @@ class DataNormalization:
         chat_completion = openai.ChatCompletion.create(
             model=self.model,
             max_tokens=100,
-            messages=[{"role": "system", "content": EQ_PROMPT}, {"role": "user", "content": f"{data1}\n\n{data2}"}],
+            messages=[
+                {"role": "system", "content": EQ_PROMPT},
+                {"role": "user", "content": f"{data1}\n\n{data2}"}
+            ],
         )
 
         return json.loads(chat_completion.choices[0].message.content)

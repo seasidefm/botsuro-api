@@ -1,6 +1,5 @@
-from functools import lru_cache
-
 import requests
+from requests.exceptions import ConnectionError
 
 
 class SongIdProxy:

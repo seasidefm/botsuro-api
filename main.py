@@ -1,9 +1,9 @@
 import json
 from logging import getLogger
 from logging.config import dictConfig
-from typing import Optional, List
-
+from typing import Optional
 import fastapi
+from fastapi import templating
 
 import prompts
 from config import LogConfig
@@ -13,7 +13,7 @@ from services import Services
 # Config
 # ===================
 
-dictConfig(LogConfig().model_dump())
+dictConfig(LogConfig().dict())
 
 # Setup
 # ===================
@@ -22,6 +22,8 @@ logger.info("Starting botsuro api!")
 
 services = Services()
 app = fastapi.FastAPI(docs_url="/docs", redoc_url="/redoc")
+
+templates = templating.Jinja2Templates(directory="templates")
 
 protected_routes = [
     "/search/discogs"
@@ -50,21 +52,26 @@ def health_check():
     :return:
     """
 
-    discogs_okay, reason = services.discogs_api.health_check()
-    song_id_okay, reason = services.song_id.health_check()
+    discogs_okay, d_reason = services.discogs_api.health_check()
+    song_id_okay, si_reason = services.song_id.health_check()
 
     return {
+        "botsuro": {
+            "status": "OK",
+            "reason": "No botsuro health check yet"
+        },
         "discogs": {
-            "status": "OK"
-            if discogs_okay else "DEGRADED",
-            "reason": reason
+            "status": "OK" if discogs_okay else "DEGRADED",
+            "reason": d_reason
         },
         "song_id": {
-            "status": "OK"
-            if song_id_okay else "DEGRADED",
-            "reason": reason
+            "status": "OK" if song_id_okay else "DEGRADED",
+            "reason": si_reason
         },
-        "database": "OK",
+        "database": {
+            "status": "OK",
+            "reason": "No database health check yet"
+        },
     }
 
 
@@ -101,6 +108,30 @@ def song_id_proxy(creator: str):
         **normalized,
         "changed": True,
     }
+
+
+@app.get("/obs/song")
+def obs_song_id_proxy(request: fastapi.Request, creator: str):
+    """
+    Render the template for the song ID for a given song
+    :param creator:
+    :return:
+    """
+    if cached := services.cache.get(f"song_id:{creator}"):
+        loaded = json.loads(cached)
+        if loaded.get("error"):
+            song_string = "Unknown Song"
+        else:
+            song_string = f"{loaded.get('artist')} - {loaded.get('song')}"
+    else:
+        song_string = "Unknown Song"
+
+    return templates.TemplateResponse(
+        "song_id.html",
+        {
+            "request": request,
+            "song_string": song_string,
+        })
 
 
 # Fave system v2

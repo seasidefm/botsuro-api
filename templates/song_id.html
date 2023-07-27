@@ -1,0 +1,42 @@
+{% extends "text-base.html" %}
+{% block content %}
+<style>
+    body * {
+        color: white;
+    }
+    .scroll-container {
+      /* Set the width and height to control the size of the container */
+      width: 100vw;
+      height: 100vh;
+      /* Add any other desired styles for the container */
+      overflow: hidden; /* Hide overflowing content */
+      padding-bottom: 25px;
+      background: green;
+    }
+
+    .song-string {
+        font-size: 48px;
+    }
+
+    .scrolling-text {
+      /* Allow the text to be displayed in a single line */
+      white-space: nowrap;
+      /* Add any other desired styles for the scrolling text */
+      animation: scrollText 20s linear infinite; /* Adjust the animation duration as needed */
+    }
+
+    @keyframes scrollText {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        /* Set the desired distance for the scroll */
+        transform: translateX(-100%);
+      }
+    }
+
+</style>
+<div class="scroll-container">
+    <p class="song-string">{{ song_string }}</p>
+</div>
+{% endblock %}

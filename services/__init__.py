@@ -10,6 +10,7 @@ from .Cache import Cache
 from .DataNormalizations import DataNormalization
 from .FaveSystem import FaveSystem
 from .OpenWeather import OpenWeatherApi
+from .SongHistory import SongHistory
 from .SongIdProxy import SongIdProxy
 from .discogs import DiscogsApi
 
@@ -25,10 +26,6 @@ class Services:
             database = MongoClient(mongo_uri)
         else:
             raise EnvironmentError("DATABASE_URL not found in env")
-
-        # Services that don't require any special setup
-        # =============================================
-        self.faves = FaveSystem(database["main"])
 
         # Services that require a special token or setup
         # =============================================
@@ -57,3 +54,7 @@ class Services:
         else:
             raise EnvironmentError("OPENAI_TOKEN not found in env")
 
+        # Services that don't require any special setup
+        # =============================================
+        self.history = SongHistory(database["main"])
+        self.faves = FaveSystem(database["main"])
