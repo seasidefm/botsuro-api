@@ -9,11 +9,11 @@ from pymongo import MongoClient
 from .Cache import Cache
 from .DataNormalizations import DataNormalization
 from .FaveSystem import FaveSystem
-from .OpenWeather import OpenWeatherApi
 from .SongHistory import SongHistory
 from .SongIdProxy import SongIdProxy
 from .discogs import DiscogsApi
 from .botsuro_brains import BotsuroBrains
+from .weather import WeatherService
 
 
 class Services:
@@ -29,6 +29,7 @@ class Services:
         # =============================================
         # self.history = SongHistory(database["main"])
         self.faves = FaveSystem()
+        self.weather = WeatherService()
 
         # Services that require a special token or setup
         # =============================================
@@ -41,11 +42,6 @@ class Services:
             self.discogs_api = DiscogsApi(discogs_token)
         else:
             raise EnvironmentError("DISCOGS_ACCESS_TOKEN not found in env")
-
-        if owm_token := os.getenv("OPEN_WEATHER_MAP_TOKEN"):
-            self.weather = OpenWeatherApi(owm_token)
-        else:
-            raise EnvironmentError("OPEN_WEATHER_MAP_TOKEN not found in env")
 
         if song_id_token := os.getenv("SONG_ID_URL"):
             self.song_id = SongIdProxy(song_id_token)

@@ -49,11 +49,13 @@ class BotsuroBrains:
     def ask(self, prompt: str, platform: Platform, query: str, max_tokens=175):
         """
         Ask a question to the bot
-        :param query:
-        :param prompt:
-        :param platform:
 
-        :return:
+        :param prompt: The prompt to provide to the bot.
+        :param platform: The platform on which the question is being asked.
+        :param query: The question being asked.
+        :param max_tokens: The maximum number of tokens for the bot's response. Default is 175.
+
+        :return: The response from the bot.
         """
         self.memories.save(Memory(role="user", content=query, platform=platform, created_at=datetime.now()))
 
