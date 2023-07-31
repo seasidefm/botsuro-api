@@ -1,22 +1,60 @@
-from typing import Mapping, Any
+import datetime
+import os
+from typing import Literal
 
-from pymongo.database import Database
+import pymongo
+from pydantic import BaseModel
 
-from Cache import Cache
+
+class Memory(BaseModel):
+    """
+    Memory model
+    """
+    created_at: datetime.datetime = None
+    role: str
+    content: str
+    platform: Literal["TWITCH", "DISCORD", "MINECRAFT"]
 
 
 class Memories:
     """
-
+    Memory service
     """
-    def __init__(self, database: Database[Mapping[str, Any]], cache: Cache):
-        self.collection = database["memories"]
 
-    def get_memories_for_context(self, context: str):
+    def __init__(self):
+        self.database = pymongo.MongoClient(os.getenv('DATABASE_URL'))
+        self.collection = self.database['main']['Memory']
+
+    def save(self, memory: Memory):
         """
-        Get the memories for a given context
-        :param context:
-        :return:
+        Saves a memory object to the collection.
+
+        :param memory: The memory object to be saved.
+        :type memory: Memory
+        """
+        self.collection.insert_one(memory.dict())
+
+    def get_memories(self, platform: Literal["TWITCH", "DISCORD", "MINECRAFT"], count: int = 10):
+        """
+        Retrieve memories from the database for a specific platform.
+
+        :param platform: The platform to fetch the memories from. Valid options are 'Memory.platform'.
+        :param count: The number of memories to retrieve. Defaults to 10 if not provided.
+        :return: A list of Memory instances retrieved from the database.
         """
 
-        return list(self.collection.find({"context": context}))
+        memories = [
+            Memory(**doc) for doc in self.collection
+            .find({
+                "platform": platform
+            })
+            .sort('created_at', -1)
+            .limit(count)
+        ]
+        memories.reverse()
+
+        print(memories, {
+                "platform": platform
+            })
+
+        return memories

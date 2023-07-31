@@ -13,6 +13,7 @@ from .OpenWeather import OpenWeatherApi
 from .SongHistory import SongHistory
 from .SongIdProxy import SongIdProxy
 from .discogs import DiscogsApi
+from .botsuro_brains import BotsuroBrains
 
 
 class Services:
@@ -20,12 +21,14 @@ class Services:
     The seaside Api services in one convenient dependency injection
     """
     def __init__(self):
+        # Load the .env file HERE so the service initializations can
+        # happen as needed below
         load_dotenv()
 
-        if mongo_uri := os.getenv("DATABASE_URL"):
-            database = MongoClient(mongo_uri)
-        else:
-            raise EnvironmentError("DATABASE_URL not found in env")
+        # Services that don't require any special setup
+        # =============================================
+        # self.history = SongHistory(database["main"])
+        self.faves = FaveSystem()
 
         # Services that require a special token or setup
         # =============================================
@@ -51,10 +54,6 @@ class Services:
 
         if openai_token := os.getenv("OPENAI_TOKEN"):
             self.data_norm = DataNormalization(openai_token)
+            self.botsuro = BotsuroBrains(openai_token)
         else:
             raise EnvironmentError("OPENAI_TOKEN not found in env")
-
-        # Services that don't require any special setup
-        # =============================================
-        self.history = SongHistory(database["main"])
-        self.faves = FaveSystem(database["main"])

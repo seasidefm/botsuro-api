@@ -5,7 +5,7 @@ The main entrypoint for the botsuro api
 import json
 from logging import getLogger
 from logging.config import dictConfig
-from typing import Optional
+from typing import Optional, Literal
 import fastapi
 from fastapi import templating
 
@@ -145,25 +145,31 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
 # Fave system v2
 # ===================
 @app.get("/faves")
-def faves_for_user(user: str):
+def faves_for_user(user: str, level: Optional[str], offset=0, count=10):
     """
-    Get the faves for a given user
-    :param user:
+    Retrieves the favorite items for a given user at a specific level.
+
+    :param user: The username of the user.
+    :param level: The level of the favorite items.
+    :param offset: The starting index from which to retrieve the favorite items. Default is 0.
+    :param count: The number of favorite items to retrieve. Default is 10.
+    :return: The favorite items for the given user at the specified level.
+    """
+
+    return services.faves.get_faves_by_level(user, level, offset, count)
+
+
+# AI Personas
+# ===================
+@app.get("/botsuro")
+def ai_personas(platform: Literal["twitch", "minecraft", "discord"], query: str):
+    """
+    Get the AI personas
     :return:
     """
 
-    return services.faves.get_faves_for_user(user)
-
-
-@app.get("/superfaves")
-def superfaves_for_user(user: str):
-    """
-    Get the superfaves for a given user
-    :param user:
-    :return:
-    """
-
-    return services.faves.get_superfaves_for_user(user)
+    prompt = services.botsuro.get_personality(platform.upper())
+    return services.botsuro.ask(prompt, platform.upper(), query, max_tokens=500)
 
 
 # AI Function callbacks
