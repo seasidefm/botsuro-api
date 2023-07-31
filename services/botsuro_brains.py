@@ -32,8 +32,6 @@ class BotsuroBrains:
 
         return memories
 
-    # TODO: Make this cache work
-    # @cached(namespace="personality", arg_key="platform", cache_time=10 * 60)
     def get_personality(self, platform: Platform) -> str:
         """
         Fetches the personality associated with the given platform.
