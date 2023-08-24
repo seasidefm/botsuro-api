@@ -65,4 +65,6 @@ class DataNormalization:
             messages=[{"role": "system", "content": prompt}, {"role": "user", "content": data}],
         )
 
+        print(chat_completion.choices[0].message.content)
+
         return json.loads(chat_completion.choices[0].message.content)
