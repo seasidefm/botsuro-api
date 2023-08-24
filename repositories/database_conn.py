@@ -6,17 +6,9 @@ from pymongo import MongoClient
 
 
 class DatabaseConn:
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(DatabaseConn, cls).__new__(cls, *args, **kwargs)
-
-        return cls._instance
-
     def __init__(self):
         if mongo_url := os.getenv("DATABASE_URL"):
-            self.db_instance = MongoClient(mongo_url)
+            self.db_instance = MongoClient(mongo_url, connect=True)
             self.selected_db = self._get_db_from_url(mongo_url=mongo_url)
         else:
             raise EnvironmentError("DATABASE_URL not found in env")
