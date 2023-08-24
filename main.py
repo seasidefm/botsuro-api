@@ -12,7 +12,7 @@ from fastapi import templating
 import prompts
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
-from models.faves import FaveLevel
+from models.faves import FaveLevel, FaveSongInput
 from services import Services
 
 # Config
@@ -161,16 +161,15 @@ def faves_for_user(user: str, level: Optional[str], offset=0, count=10):
 
 
 @app.post("/fave_this")
-def fave_this(user: str, level: FaveLevel):
+def fave_this(fave_input: FaveSongInput):
     """
     Marks the current song as a favorite for the given user at the specified level.
 
-    :param user: The username of the user.
-    :param level: The level of favoritism to be given to the current song.
+    :param fave_input: The input for the favorite item.
     :return: The favorite item that was created.
     """
 
-    return services.faves.fave_this(user, level)
+    return services.faves.fave_this(fave_input.user, fave_input.level)
 
 
 # AI Personas

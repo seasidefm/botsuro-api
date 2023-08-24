@@ -24,17 +24,17 @@ class Faves:
         data = self.cache.get("song_id:seasidefm")
         data = json.loads(data) if data else None
 
-        if data is None or data.get("error"):
+        if data is None or data.get("error") is not None:
             return None
 
         return CurrentSong(**data)
 
     def save(self, user_id: str, level: FaveLevel):
         song = self.get_current_song()
-        song_string = f"{song.artist} ||| {song.song}"
         if not song:
             raise ValueError("current song is None in cache!")
 
+        song_string = f"{song.artist} ||| {song.song}"
         search = {
             "user_id": user_id,
             "level": level,

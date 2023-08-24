@@ -6,6 +6,11 @@ from pydantic import BaseModel, Field
 FaveLevel = Optional[Literal["fave", "super", "ultra", "hyper"]]
 
 
+class FaveSongInput(BaseModel):
+    user: str
+    level: FaveLevel
+
+
 class FaveSong(BaseModel):
     """
     Represents a favorite song.
