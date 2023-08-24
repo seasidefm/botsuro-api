@@ -6,6 +6,7 @@ from repositories.faves import Faves
 
 
 class FaveResult(enum.Enum):
+    NOTFOUND = "notfound"
     SAVED = "saved"
     EXISTS = "exists",
     ERROR = "error"
@@ -30,6 +31,8 @@ class FaveSystem:
             self.faves.save(user_id, level)
             return FaveResult.SAVED
         except ValueError as e:
+            if "not found" in str(e):
+                return FaveResult.NOTFOUND
             if "already exists" in str(e):
                 return FaveResult.EXISTS
 

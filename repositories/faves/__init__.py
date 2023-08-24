@@ -32,7 +32,7 @@ class Faves:
     def save(self, user_id: str, level: FaveLevel):
         song = self.get_current_song()
         if not song:
-            raise ValueError("current song is None in cache!")
+            raise ValueError("song not found in cache!")
 
         song_string = f"{song.artist} ||| {song.song}"
         search = {
