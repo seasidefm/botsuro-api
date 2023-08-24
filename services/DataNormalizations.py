@@ -61,7 +61,6 @@ class DataNormalization:
 
         chat_completion = openai.ChatCompletion.create(
             model=self.model,
-            max_tokens=100,
             messages=[{"role": "system", "content": prompt}, {"role": "user", "content": data}],
         )
 
