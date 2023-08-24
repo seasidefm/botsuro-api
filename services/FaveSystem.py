@@ -1,6 +1,14 @@
-from models.faves import FaveLevel
+import enum
+
+from models.faves import FaveLevel, FaveSong
 from models.pagination import Pagination
 from repositories.faves import Faves
+
+
+class FaveResult(enum.Enum):
+    SAVED = "saved"
+    EXISTS = "exists",
+    ERROR = "error"
 
 
 class FaveSystem:
@@ -16,3 +24,13 @@ class FaveSystem:
                 offset=0,
             )
         )
+
+    def fave_this(self, user_id: str, level: FaveLevel) -> FaveResult:
+        try:
+            self.faves.save(user_id, level)
+            return FaveResult.SAVED
+        except ValueError as e:
+            if "already exists" in str(e):
+                return FaveResult.EXISTS
+
+            return FaveResult.ERROR

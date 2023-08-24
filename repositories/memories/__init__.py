@@ -1,19 +1,8 @@
-import datetime
-import os
 from typing import Literal
 
-import pymongo
-from pydantic import BaseModel
 
-
-class Memory(BaseModel):
-    """
-    Memory model
-    """
-    created_at: datetime.datetime = None
-    role: str
-    content: str
-    platform: Literal["TWITCH", "DISCORD", "MINECRAFT"]
+from models.memory import Memory
+from repositories.database_conn import DatabaseConn
 
 
 class Memories:
@@ -22,8 +11,7 @@ class Memories:
     """
 
     def __init__(self):
-        self.database = pymongo.MongoClient(os.getenv('DATABASE_URL'))
-        self.collection = self.database['main']['Memory']
+        self.collection = DatabaseConn().get_collection('Memory')
 
     def save(self, memory: Memory):
         """

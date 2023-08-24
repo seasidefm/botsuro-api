@@ -4,7 +4,6 @@ The app-level service dependency injector
 import os
 
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
 from .Cache import Cache
 from .DataNormalizations import DataNormalization
@@ -12,7 +11,7 @@ from .FaveSystem import FaveSystem
 from .SongHistory import SongHistory
 from .SongIdProxy import SongIdProxy
 from .discogs import DiscogsApi
-from .botsuro_brains import BotsuroBrains
+from .brains import BotsuroBrains
 from .weather import WeatherService
 
 

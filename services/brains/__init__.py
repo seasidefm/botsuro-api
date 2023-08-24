@@ -1,16 +1,16 @@
-import pprint
 from datetime import datetime
 from typing import Literal, Type
 
 import openai
 import requests
 
-from .Memory import Memories, Memory
+from models.memory import Memory
+from models.platform import Platform, PlatformEnum
+from repositories.ai import OpenAi
+from repositories.memories import Memories
 from prompts.sanity_urls import MINECRAFT_PERSONALITY, from_prompt_blocks
 
 SELECTED_MODEL = "gpt-3.5-turbo"
-
-Platform = Type[Literal["TWITCH", "DISCORD", "MINECRAFT"]]
 
 
 class BotsuroBrains:
@@ -18,10 +18,16 @@ class BotsuroBrains:
     The brains of the bot (almost literally). This is where the magic happens.
     """
 
+    personality_queries = {
+        PlatformEnum.MINECRAFT: MINECRAFT_PERSONALITY,
+        PlatformEnum.TWITCH: "",
+        PlatformEnum.DISCORD: ""
+    }
+
     def __init__(self, openai_token: str):
         self.model = SELECTED_MODEL
         self.memories = Memories()
-        openai.api_key = openai_token
+        self.ai = OpenAi()
 
     def _get_memories(self, platform=Platform):
         """
@@ -42,41 +48,31 @@ class BotsuroBrains:
 
         :return: None
         """
-        data = requests.get(MINECRAFT_PERSONALITY).json()
+        # TODO: Move this to a Sanity repository
+        query: str = self.personality_queries[platform]
+        data = requests.get(query).json()
 
         return from_prompt_blocks(data.get('result')[0].get('aiPrompt'))
 
-    def ask(self, prompt: str, platform: Platform, query: str, max_tokens=175):
+    def ask(self, platform: Platform, query: str, max_tokens=175):
         """
         Ask a question to the bot
 
-        :param prompt: The prompt to provide to the bot.
         :param platform: The platform on which the question is being asked.
         :param query: The question being asked.
-        :param max_tokens: The maximum number of tokens for the bot's response. Default is 175.
+        :param max_tokens: The maximum number of tokens for the response. Default is 175.
 
         :return: The response from the bot.
         """
         self.memories.save(Memory(role="user", content=query, platform=platform, created_at=datetime.now()))
+        prompt = self.get_personality(platform=platform)
 
-        completion = openai.ChatCompletion.create(
-            model=self.model,
+        completion = self.ai.get_chat_completion(
+            prompt,
+            query,
+            model="premium",
             max_tokens=max_tokens,
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt
-                },
-                *[
-                    {"role": memory.role, "content": memory.content} for memory in (
-                            self._get_memories(platform=platform) or []
-                    )
-                ],
-                {
-                    "role": "user",
-                    "content": query
-                }
-            ]
+            memories=self._get_memories(platform=platform)
         )
 
         content = completion.choices[0]["message"]["content"]

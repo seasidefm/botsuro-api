@@ -12,6 +12,7 @@ from fastapi import templating
 import prompts
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
+from models.faves import FaveLevel
 from services import Services
 
 # Config
@@ -159,6 +160,19 @@ def faves_for_user(user: str, level: Optional[str], offset=0, count=10):
     return services.faves.get_faves_by_level(user, level, offset, count)
 
 
+@app.post("/fave_this")
+def fave_this(user: str, level: FaveLevel):
+    """
+    Marks the current song as a favorite for the given user at the specified level.
+
+    :param user: The username of the user.
+    :param level: The level of favoritism to be given to the current song.
+    :return: The favorite item that was created.
+    """
+
+    return services.faves.fave_this(user, level)
+
+
 # AI Personas
 # ===================
 @app.get("/botsuro")
@@ -168,8 +182,7 @@ def ai_personas(platform: Literal["twitch", "minecraft", "discord"], query: str)
     :return:
     """
 
-    prompt = services.botsuro.get_personality(platform.upper())
-    return services.botsuro.ask(prompt, platform.upper(), query, max_tokens=500)
+    return services.botsuro.ask(platform.upper(), query, max_tokens=500)
 
 
 # AI Function callbacks
