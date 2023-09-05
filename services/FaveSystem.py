@@ -36,4 +36,4 @@ class FaveSystem:
             if "already exists" in str(e):
                 return FaveResult.EXISTS
 
-            return FaveResult.ERROR
+        return FaveResult.ERROR

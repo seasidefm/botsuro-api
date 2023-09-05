@@ -169,7 +169,10 @@ def fave_this(fave_input: FaveSongInput):
     :return: The favorite item that was created.
     """
 
-    return services.faves.fave_this(fave_input.user, fave_input.level)
+    fave_status = services.faves.fave_this(fave_input.user, fave_input.level)
+    logger.info(f"User {fave_input.user} {fave_input.level}faved with status {fave_status}")
+
+    return fave_status
 
 
 # AI Personas
