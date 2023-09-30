@@ -49,7 +49,9 @@ class BotsuroBrains:
         :return: None
         """
         # TODO: Move this to a Sanity repository
-        query: str = self.personality_queries[platform]
+        query: str = self.personality_queries[
+            PlatformEnum.from_str(platform)
+        ]
         data = requests.get(query).json()
 
         return from_prompt_blocks(data.get('result')[0].get('aiPrompt'))

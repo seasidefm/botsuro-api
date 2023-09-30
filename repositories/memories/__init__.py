@@ -41,8 +41,4 @@ class Memories:
         ]
         memories.reverse()
 
-        print(memories, {
-                "platform": platform
-            })
-
         return memories

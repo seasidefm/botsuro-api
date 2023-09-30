@@ -16,3 +16,17 @@ class PlatformEnum(enum.Enum):
     TWITCH = "TWITCH",
     DISCORD = "DISCORD",
     MINECRAFT = "MINECRAFT"
+
+    @classmethod
+    def from_str(cls, platform: Platform):
+        """
+        Converts a string to a PlatformEnum.
+
+        :param platform: The platform to convert.
+        :type platform: str
+
+        :return: The converted platform.
+        :rtype: PlatformEnum
+        """
+        return cls[platform.upper()]
+
