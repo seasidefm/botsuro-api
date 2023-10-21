@@ -12,7 +12,7 @@ from fastapi import templating
 import prompts
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
-from models.faves import FaveLevel, FaveSongInput
+from models.faves import FaveSongInput
 from services import Services
 
 # Config
@@ -146,10 +146,12 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
 # Fave system v2
 # ===================
 @app.get("/faves")
-def faves_for_user(user: str, level: Optional[str], offset=0, count=10):
+def faves_for_user(user: str, level: Optional[str]=None, offset=0, count=10, sort_by="fave_date", sort_order="desc"):
     """
     Retrieves the favorite items for a given user at a specific level.
 
+    :param sort_order:
+    :param sort_by:
     :param user: The username of the user.
     :param level: The level of the favorite items.
     :param offset: The starting index from which to retrieve the favorite items. Default is 0.
@@ -157,7 +159,7 @@ def faves_for_user(user: str, level: Optional[str], offset=0, count=10):
     :return: The favorite items for the given user at the specified level.
     """
 
-    return services.faves.get_faves_by_level(user, level, offset, count)
+    return services.faves.get_faves_by_level(user, level, offset, count, sort_by, sort_order)
 
 
 @app.post("/fave_this")

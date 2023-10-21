@@ -55,10 +55,20 @@ class Faves:
 
         return True
 
-    def get_by_level(self, user_id: str, level: FaveLevel, pagination: Pagination) -> List[FaveSong]:
-        faves = self.collection.find({
-            "user": user_id,
+    def get_by_level(self, user_id: str, level: Optional[FaveLevel], pagination: Pagination, sort_by="fave_date", sort_order="desc") -> dict:
+        config = {
+            "user_id": user_id,
             "level": level
-        }).skip(pagination.offset).limit(pagination.count)
+        } if level else {
+            "user_id": user_id
+        }
 
-        return self.to_fave_list(faves)
+        faves = (self.collection.find(config)
+                 .sort(sort_by, -1 if sort_order == "desc" else 1)
+                 .skip(pagination.offset).limit(pagination.count))
+
+        return {
+            "faves": self.to_fave_list(faves),
+            "total": self.collection.count_documents(config),
+            "pagination": pagination,
+        }
