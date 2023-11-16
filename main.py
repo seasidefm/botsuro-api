@@ -147,7 +147,7 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
 # Fave system v2
 # ===================
 @app.get("/faves")
-def faves_for_user(user: str, level: Optional[str]=None, offset=0, count=10, sort_by="fave_date", sort_order="desc"):
+def faves_for_user(user: str, level: Optional[str] = None, offset=0, count=10, sort_by="fave_date", sort_order="desc"):
     """
     Retrieves the favorite items for a given user at a specific level.
 
@@ -189,19 +189,30 @@ def add_note(note_input: NewNoteInput):
     :return: The favorite item that was created.
     """
 
-    note_status = services.notes.create_note_for_user(note_input.user, note_input.content)
-    logger.info(f"User {note_input.user} created note with status {note_status}")
+    new_note = services.notes.create_note_for_user(note_input.user, note_input.content)
+    logger.info(f"User {note_input.user} created note")
 
-    if note_status.inserted_id:
+    if new_note:
         return {
             "status": "created",
-            "note_id": str(note_status.inserted_id),
         }
     else:
         return {
             "status": "error",
-            "reason": "unknown",
+            "reason": "unknown",  # TODO: Add reason
         }
+
+
+@app.get("/notes")
+def get_notes(user: str):
+    """
+    Retrieves the notes for a given user.
+
+    :param user: The username of the user.
+    :return: The notes for the given user.
+    """
+
+    return services.notes.get_notes_for_user(user)
 
 
 # AI Personas
