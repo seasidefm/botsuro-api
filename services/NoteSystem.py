@@ -1,3 +1,4 @@
+from models.pagination import Pagination
 from models.notes import Note
 from repositories.notes import Notes
 
@@ -18,14 +19,16 @@ class NoteSystem:
             content=content,
         )
 
-    def get_notes_for_user(self, user_id: str):
-        notes = self.notes.get_notes_for_user(
-            user_id
+    def get_notes_for_user(self, user_id: str, offset=0, count=10, sort_by="created_at", sort_order="desc"):
+        return self.notes.get_notes_for_user(
+            user_id,
+            pagination=Pagination(
+                count=count,
+                offset=offset,
+            ),
+            sort_by=sort_by,
+            sort_order=sort_order,
         )
-
-        return [
-            Note(**note, note_id=str(note.get("_id"))) for note in notes
-        ]
 
     def delete_note(self, note_id: str):
         return self.notes.delete_note(

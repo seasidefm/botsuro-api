@@ -204,15 +204,19 @@ def add_note(note_input: NewNoteInput):
 
 
 @app.get("/notes")
-def get_notes(user: str):
+def get_notes(user: str, offset=0, count=10, sort_by="fave_date", sort_order="desc"):
     """
     Retrieves the notes for a given user.
 
+    :param sort_order:
+    :param sort_by:
+    :param count:
+    :param offset:
     :param user: The username of the user.
     :return: The notes for the given user.
     """
 
-    return services.notes.get_notes_for_user(user)
+    return services.notes.get_notes_for_user(user, offset, count, sort_by, sort_order)
 
 
 # AI Personas
