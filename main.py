@@ -13,6 +13,7 @@ import prompts
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
 from models.faves import FaveSongInput
+from models.notes import NewNoteInput
 from services import Services
 
 # Config
@@ -175,6 +176,32 @@ def fave_this(fave_input: FaveSongInput):
     logger.info(f"User {fave_input.user} {fave_input.level}faved with status {fave_status}")
 
     return fave_status
+
+
+# Note system
+# ===================
+@app.post("/notes")
+def add_note(note_input: NewNoteInput):
+    """
+    Marks the current song as a favorite for the given user at the specified level.
+
+    :param note_input: The input for the favorite item.
+    :return: The favorite item that was created.
+    """
+
+    note_status = services.notes.create_note_for_user(note_input.user, note_input.content)
+    logger.info(f"User {note_input.user} created note with status {note_status}")
+
+    if note_status.inserted_id:
+        return {
+            "status": "created",
+            "note_id": str(note_status.inserted_id),
+        }
+    else:
+        return {
+            "status": "error",
+            "reason": "unknown",
+        }
 
 
 # AI Personas

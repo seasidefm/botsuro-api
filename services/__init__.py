@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from .Cache import Cache
 from .DataNormalizations import DataNormalization
 from .FaveSystem import FaveSystem
+from .NoteSystem import NoteSystem
 from .SongHistory import SongHistory
 from .SongIdProxy import SongIdProxy
 from .discogs import DiscogsApi
@@ -29,6 +30,7 @@ class Services:
         # self.history = SongHistory(database["main"])
         self.faves = FaveSystem()
         self.weather = WeatherService()
+        self.notes = NoteSystem()
 
         # Services that require a special token or setup
         # =============================================
