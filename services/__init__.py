@@ -5,7 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .Cache import Cache
+from repositories.cache import Cache
 from .DataNormalizations import DataNormalization
 from .FaveSystem import FaveSystem
 from .NoteSystem import NoteSystem

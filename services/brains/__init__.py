@@ -4,11 +4,13 @@ from typing import Literal, Type
 import openai
 import requests
 
+from models.completion import ChatCompletion
 from models.memory import Memory
 from models.platform import Platform, PlatformEnum
 from repositories.ai import OpenAi
 from repositories.memories import Memories
-from prompts.sanity_urls import MINECRAFT_PERSONALITY, from_prompt_blocks
+from queries.sanity_urls import MINECRAFT_PERSONALITY, from_prompt_blocks
+from repositories.sanity import Sanity
 
 SELECTED_MODEL = "gpt-3.5-turbo"
 
@@ -18,16 +20,11 @@ class BotsuroBrains:
     The brains of the bot (almost literally). This is where the magic happens.
     """
 
-    personality_queries = {
-        PlatformEnum.MINECRAFT: MINECRAFT_PERSONALITY,
-        PlatformEnum.TWITCH: "",
-        PlatformEnum.DISCORD: ""
-    }
-
     def __init__(self, openai_token: str):
         self.model = SELECTED_MODEL
         self.memories = Memories()
         self.ai = OpenAi()
+        self.sanity = Sanity()
 
     def _get_memories(self, platform=Platform):
         """
@@ -48,15 +45,12 @@ class BotsuroBrains:
 
         :return: None
         """
-        # TODO: Move this to a Sanity repository
-        query: str = self.personality_queries[
-            PlatformEnum.from_str(platform)
-        ]
-        data = requests.get(query).json()
 
-        return from_prompt_blocks(data.get('result')[0].get('aiPrompt'))
+        data = self.sanity.get_bot_personality(platform)
 
-    def ask(self, platform: Platform, query: str, max_tokens=175):
+        return from_prompt_blocks(data[0].aiPrompt)
+
+    def ask(self, platform: Platform, query: str, max_tokens=175) -> ChatCompletion:
         """
         Ask a question to the bot
 
@@ -80,7 +74,9 @@ class BotsuroBrains:
         content = completion.choices[0]["message"]["content"]
         self.memories.save(Memory(role="assistant", content=content, platform=platform, created_at=datetime.now()))
 
-        return content
+        return ChatCompletion({
+            "content": content,
+        })
 
     def save_memory(self, memory: Memory):
         """

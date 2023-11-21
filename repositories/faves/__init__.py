@@ -4,7 +4,6 @@ from typing import List, Iterable, Optional
 from models.current_song import CurrentSong
 from models.pagination import Pagination
 from models.faves import FaveLevel, FaveSong
-from services.Cache import get_cache
 from ..database_conn import DatabaseConn
 from ..mem_cache import MemCache
 

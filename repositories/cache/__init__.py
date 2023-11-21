@@ -4,6 +4,7 @@ Cache service
 import functools
 import logging
 import os
+import pickle
 
 import redis
 
@@ -32,22 +33,40 @@ class Cache:
         :param key:
         :return:
         """
-        return self.redis.get(key)
+        cached_data = self.redis.get(key)
+        if cached_data:
+            return pickle.loads(cached_data)
+        return None
 
-    def set(self, key: str, value: str, cache_time: int = 15 * 60):
+    def set(self, key: str, value, cache_time: int = 15 * 60):
         """
         Set the value of a key in the cache.
 
         :param key: The key of the data to be cached.
         :type key: str
         :param value: The value to be cached.
-        :type value: str
         :param cache_time: The time in seconds until the cache expires. Default is 15 minutes (900 seconds).
         :type cache_time: int
         :return: None
         """
-        self.redis.set(key, value)
+        pickled_value = pickle.dumps(value)
+        self.redis.set(key, pickled_value)
         self.redis.expire(key, cache_time)
+
+    @staticmethod
+    def cached_function(function, *args, key_prefix="", cache_time=15 * 60):
+        cache = get_cache()
+
+        prefix = key_prefix if key_prefix is not None else function.__name__
+        cache_key = prefix + ":".join(map(str, args))
+        cached_result = cache.get(cache_key)
+
+        if cached_result is not None:
+            return cached_result
+        else:
+            result = function(*args)
+            cache.set(cache_key, result, cache_time)
+            return result
 
 
 def cached(cache: Cache = get_cache(), arg_key="key_arg", cache_time=15 * 60, namespace="default"):

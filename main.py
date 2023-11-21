@@ -9,7 +9,7 @@ from typing import Optional, Literal
 import fastapi
 from fastapi import templating
 
-import prompts
+import queries
 from config import LogConfig
 from middleware.identity import IdentityMiddleware
 from models.faves import FaveSongInput
@@ -95,7 +95,7 @@ def song_id_proxy(creator: str):
     cached = services.cache.get(f"song_id:{creator}")
 
     normalized = services.data_norm.normalize(
-        prompts.SONG_ID_NORMALIZATION, json.dumps(song_id)
+        queries.SONG_ID_NORMALIZATION, json.dumps(song_id)
     )
 
     if cached is not None:
@@ -229,6 +229,16 @@ def ai_personas(platform: Literal["twitch", "minecraft", "discord"], query: str)
     """
 
     return services.botsuro.ask(platform.upper(), query, max_tokens=500)
+
+
+@app.get("/get-completion")
+def get_completion(platform: Literal["twitch", "minecraft", "discord"], query: str, max_tokens: int = 500):
+    """
+    Get the AI personas
+    :return:
+    """
+
+    return services.botsuro.ask(platform.upper(), query, max_tokens=max_tokens)
 
 
 # AI Function callbacks
