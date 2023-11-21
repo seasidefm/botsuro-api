@@ -1,6 +1,6 @@
 import json
 
-import openai
+from openai import OpenAI
 
 MODEL: str = "gpt-3.5-turbo"
 
@@ -24,7 +24,7 @@ class DataNormalization:
     def __init__(self, openai_token: str):
         self.model = MODEL
         self.openai_token = openai_token
-        openai.api_key = openai_token
+        self.client = OpenAI(api_key=openai_token)
 
     def health_check(self):
         return True, "OK"
@@ -37,14 +37,15 @@ class DataNormalization:
         :return:
         """
 
-        chat_completion = openai.ChatCompletion.create(
+        chat_completion = self.client.chat.completions.create(
             model=self.model,
             max_tokens=100,
             messages=[
                 {"role": "system", "content": EQ_PROMPT},
                 {"role": "user", "content": f"{data1}\n\n{data2}"}
-            ],
-        )
+            ])
+
+        print(chat_completion.choices[0].message.content)
 
         return json.loads(chat_completion.choices[0].message.content)
 
@@ -59,10 +60,9 @@ class DataNormalization:
         if prompt is None:
             prompt = "Normalize the following data:\n\n" + data + "\n\nNormalized data:"
 
-        chat_completion = openai.ChatCompletion.create(
-            model=self.model,
-            messages=[{"role": "system", "content": prompt}, {"role": "user", "content": data}],
-        )
+        chat_completion = self.client.chat.completions.create(model=self.model,
+                                                              messages=[{"role": "system", "content": prompt},
+                                                                        {"role": "user", "content": data}])
 
         print(chat_completion.choices[0].message.content)
 

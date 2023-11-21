@@ -71,12 +71,10 @@ class BotsuroBrains:
             memories=self._get_memories(platform=platform)
         )
 
-        content = completion.choices[0]["message"]["content"]
+        content = completion.choices[0].message.content
         self.memories.save(Memory(role="assistant", content=content, platform=platform, created_at=datetime.now()))
 
-        return ChatCompletion({
-            "content": content,
-        })
+        return ChatCompletion(content=content)
 
     def save_memory(self, memory: Memory):
         """

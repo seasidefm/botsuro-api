@@ -4,7 +4,6 @@ from typing import Literal, List
 import openai
 
 from models.memory import Memory
-from models.platform import Platform
 
 
 class OpenAi:
@@ -22,7 +21,7 @@ class OpenAi:
 
     def __init__(self):
         if openai_token := os.getenv("OPENAI_TOKEN"):
-            openai.api_key = openai_token
+            self.client = openai.OpenAI(api_key=openai_token)
             self.chat_completion = openai.ChatCompletion
         else:
             raise EnvironmentError("OPENAI_TOKEN not found in env")
@@ -43,7 +42,7 @@ class OpenAi:
         if memories is None:
             memories = []
 
-        return self.chat_completion.create(
+        return self.client.chat.completions.create(
             model=self.models["default"] if model is None else self.models[model],
             max_tokens=max_tokens,
             messages=[
@@ -53,7 +52,7 @@ class OpenAi:
                 },
                 *[
                     {"role": memory.role, "content": memory.content} for memory in (
-                            memories
+                        memories
                     )
                 ],
                 {
