@@ -10,7 +10,7 @@ class OpenAi:
     _instance = None
     models = {
         "default": "gpt-3.5-turbo",
-        "premium": "gpt-4"
+        "premium": "gpt-4-1106-preview"
     }
 
     def __new__(cls, *args, **kwargs):
