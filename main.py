@@ -232,7 +232,7 @@ def ai_personas(platform: Literal["twitch", "minecraft", "discord"], query: str)
 
 
 @app.get("/get-completion")
-def get_completion(platform: Literal["twitch", "minecraft", "discord"], query: str, max_tokens: int = 500):
+def get_completion(platform: str, query: str, max_tokens: int = 500):
     """
     Get the AI personas
     :return:

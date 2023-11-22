@@ -1,15 +1,13 @@
 from datetime import datetime
-from typing import Literal, Type
 
 import openai
-import requests
 
 from models.completion import ChatCompletion
 from models.memory import Memory
-from models.platform import Platform, PlatformEnum
+from models.platform import Platform
 from repositories.ai import OpenAi
 from repositories.memories import Memories
-from queries.sanity_urls import MINECRAFT_PERSONALITY, from_prompt_blocks
+from queries.sanity_urls import from_prompt_blocks
 from repositories.sanity import Sanity
 
 SELECTED_MODEL = "gpt-3.5-turbo"
@@ -60,21 +58,27 @@ class BotsuroBrains:
 
         :return: The response from the bot.
         """
-        self.memories.save(Memory(role="user", content=query, platform=platform, created_at=datetime.now()))
-        prompt = self.get_personality(platform=platform)
 
-        completion = self.ai.get_chat_completion(
-            prompt,
-            query,
-            model="premium",
-            max_tokens=max_tokens,
-            memories=self._get_memories(platform=platform)
-        )
+        try:
+            self.memories.save(Memory(role="user", content=query, platform=platform, created_at=datetime.now()))
+            prompt = self.get_personality(platform=platform)
 
-        content = completion.choices[0].message.content
-        self.memories.save(Memory(role="assistant", content=content, platform=platform, created_at=datetime.now()))
+            completion = self.ai.get_chat_completion(
+                prompt,
+                query,
+                model="premium",
+                max_tokens=max_tokens,
+                memories=self._get_memories(platform=platform)
+            )
 
-        return ChatCompletion(content=content)
+            content = completion.choices[0].message.content
+            self.memories.save(Memory(role="assistant", content=content, platform=platform, created_at=datetime.now()))
+
+            return ChatCompletion(content=content)
+        except openai.InternalServerError as e:
+            print("CAUGHT ERROR: ", e)
+            return ChatCompletion(content="I'm sorry, I'm having trouble thinking right now. Can you ask me again in "
+                                          "a few minutes? (OpenAI is probably down)")
 
     def save_memory(self, memory: Memory):
         """

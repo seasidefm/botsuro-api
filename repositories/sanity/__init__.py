@@ -21,7 +21,7 @@ class Sanity:
         """
         return urlencode({"query": query})
 
-    def get_bot_personality(self, platform: str) -> List[BotPersonalityResult]:
+    def _get_bot_personality(self, platform: str) -> List[BotPersonalityResult]:
         """
         Get the list of bot personalities from Sanity
         :return:
@@ -37,15 +37,16 @@ class Sanity:
             print("KeyError? what caused this?")
             return []
 
-    # def get_bot_personality(self, platform: str) -> List[BotPersonalityResult]:
-    #     """
-    #     Get the list of bot personalities from Sanity
-    #     :return:
-    #     """
-    #     return Cache.cached_function(
-    #         self._get_bot_personality,
-    #         platform,
-    #         key_prefix="bot_personality",
-    #         # Cache for 20 minutes
-    #         cache_time=20 * 60
-    #     )
+    def get_bot_personality(self, platform: str) -> List[BotPersonalityResult]:
+        """
+        Get the list of bot personalities from Sanity
+        :return:
+        """
+
+        return Cache.cached_function(
+            self._get_bot_personality,
+            platform,
+            key_prefix="bot_personality",
+            # Cache for 20 minutes
+            cache_time=20 * 60
+        )

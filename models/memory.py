@@ -11,4 +11,4 @@ class Memory(BaseModel):
     created_at: datetime = None
     role: str
     content: str
-    platform: Literal["TWITCH", "DISCORD", "MINECRAFT"]
+    platform: str
