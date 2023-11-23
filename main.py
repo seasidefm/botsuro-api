@@ -109,7 +109,7 @@ def song_id_proxy(creator: str):
                 "changed": False,
             }
 
-    services.cache.set(f"song_id:{creator}", json.dumps(normalized))
+    services.cache.set(f"song_id:{creator}", normalized)
     return {
         **normalized,
         "changed": True,
@@ -127,7 +127,7 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
     """
 
     if cached := services.cache.get(f"song_id:{creator}"):
-        loaded = json.loads(cached)
+        loaded = cached
         if loaded.get("error"):
             song_string = "Unknown Song"
         else:
