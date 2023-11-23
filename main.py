@@ -92,7 +92,7 @@ def song_id_proxy(creator: str):
     """
 
     song_id = services.song_id.get_song_id(creator)
-    cached = services.cache.get(f"song_id:{creator}")
+    cached = services.cache.get_json(f"song_id:{creator}")
 
     normalized = services.data_norm.normalize(
         queries.SONG_ID_NORMALIZATION, json.dumps(song_id)
@@ -109,7 +109,7 @@ def song_id_proxy(creator: str):
                 "changed": False,
             }
 
-    services.cache.set(f"song_id:{creator}", normalized)
+    services.cache.set_json(f"song_id:{creator}", json.dumps(normalized))
     return {
         **normalized,
         "changed": True,
@@ -127,7 +127,7 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
     """
 
     if cached := services.cache.get(f"song_id:{creator}"):
-        loaded = cached
+        loaded = json.loads(cached)
         if loaded.get("error"):
             song_string = "Unknown Song"
         else:

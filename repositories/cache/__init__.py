@@ -38,6 +38,17 @@ class Cache:
             return pickle.loads(cached_data)
         return None
 
+    def get_json(self, key: str):
+        """
+        Get a value from the cache
+        :param key:
+        :return:
+        """
+        cached_data = self.redis.get(key)
+        if cached_data:
+            return cached_data
+        return None
+
     def set(self, key: str, value, cache_time: int = 15 * 60):
         """
         Set the value of a key in the cache.
@@ -51,6 +62,21 @@ class Cache:
         """
         pickled_value = pickle.dumps(value)
         self.redis.set(key, pickled_value)
+        self.redis.expire(key, cache_time)
+
+    def set_json(self, key: str, value, cache_time: int = 15 * 60):
+        """
+        Set the value of a key in the cache.
+
+        :param key: The key of the data to be cached.
+        :type key: str
+        :param value: The value to be cached.
+        :param cache_time: The time in seconds until the cache expires. Default is 15 minutes (900 seconds).
+        :type cache_time: int
+        :return: None
+        """
+
+        self.redis.set(key, value)
         self.redis.expire(key, cache_time)
 
     @staticmethod
