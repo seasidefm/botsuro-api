@@ -37,5 +37,7 @@ class FaveSystem:
                 return FaveResult.NOTFOUND
             if "already exists" in str(e):
                 return FaveResult.EXISTS
+            else:
+                print("Unknown error: ", e)
 
         return FaveResult.ERROR
