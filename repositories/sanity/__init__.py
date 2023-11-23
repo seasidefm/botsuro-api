@@ -2,6 +2,7 @@ import os
 from typing import List
 from urllib.parse import urlencode
 
+import dotenv
 import requests
 
 from models.sanity import BotPersonalityResult, QueryResponse
@@ -11,6 +12,7 @@ from repositories.cache import Cache
 
 class Sanity:
     def __init__(self):
+        dotenv.load_dotenv()
         self.base_url = os.getenv("SANITY_URL")
 
     def encode_query(self, query: str) -> str:
