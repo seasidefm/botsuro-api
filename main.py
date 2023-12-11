@@ -241,6 +241,45 @@ def get_completion(platform: str, query: str, max_tokens: int = 500):
     return services.botsuro.ask(platform.upper(), query, max_tokens=max_tokens)
 
 
+@app.get("/ai/models")
+def ai_chat(query: str):
+    """
+    Use Amazon Lex to chat with the AI
+    :param query:
+    :return:
+    """
+    return services.ai_chat.get_bedrock_models()
+
+
+@app.get("/ai/test")
+def ai_chat(query: str):
+    """
+    Use Amazon Lex to chat with the AI
+    :param query:
+    :return:
+    """
+    return services.ai_chat.test_completion(query)
+
+
+@app.get("/ai-chat")
+def ai_chat(query: str):
+    """
+    Use Amazon Lex to chat with the AI
+    :param query:
+    :return:
+    """
+    return services.ai_chat.get_response(query)
+
+
+@app.get("/bots")
+def ai_chat(query: str):
+    """
+    Use Amazon Lex to chat with the AI
+    :param query:
+    :return:
+    """
+    return services.ai_chat.get_bots()
+
 # AI Function callbacks
 # ===================
 @app.get("/discogs/price")

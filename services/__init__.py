@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 
 from repositories.cache import Cache
+from .AiChat import AiChat
 from .DataNormalizations import DataNormalization
 from .FaveSystem import FaveSystem
 from .NoteSystem import NoteSystem
@@ -31,6 +32,7 @@ class Services:
         self.faves = FaveSystem()
         self.weather = WeatherService()
         self.notes = NoteSystem()
+        self.ai_chat = AiChat()
 
         # Services that require a special token or setup
         # =============================================
