@@ -90,6 +90,7 @@ class Cache:
         if cached_result is not None:
             return cached_result
         else:
+            print(*args)
             result = function(*args)
             cache.set(cache_key, result, cache_time)
             return result

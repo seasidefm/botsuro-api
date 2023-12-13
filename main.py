@@ -219,6 +219,24 @@ def get_notes(user: str, offset=0, count=10, sort_by="fave_date", sort_order="de
     return services.notes.get_notes_for_user(user, offset, count, sort_by, sort_order)
 
 
+@app.get("/menus")
+def get_album_menus():
+    """
+    Get the list of album menus from Sanity
+    :return:
+    """
+    return services.album_menus.get_album_menus()
+
+
+@app.get("/menus/{slug}")
+def get_album_menu(slug: str, bypass_cache="false"):
+    """
+    Get a specific album menu from Sanity
+    :return:
+    """
+    return services.album_menus.get_album_menu(slug, bypass_cache=json.loads(bypass_cache))
+
+
 # AI Personas
 # ===================
 @app.get("/botsuro")
