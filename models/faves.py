@@ -1,14 +1,14 @@
 from datetime import datetime
-from typing import Optional, Literal
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
-FaveLevel = Optional[Literal["fave", "super", "ultra", "hyper"]]
+FaveLevel = Optional[str]
 
 
 class FaveSongInput(BaseModel):
     user: str
-    level: FaveLevel
+    level: str = Field(default="fave", regex=r"^([a-z]*fave)$")
 
 
 class FaveSong(BaseModel):
