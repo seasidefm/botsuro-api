@@ -7,7 +7,7 @@ from logging import getLogger
 from logging.config import dictConfig
 from typing import Optional, Literal
 import fastapi
-from fastapi import templating
+from fastapi import templating, Request
 
 import queries
 from config import LogConfig
@@ -144,7 +144,7 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
         })
 
 
-# Fave system v2
+# Streaming
 # ===================
 @app.get("/streams")
 def active_streams():
@@ -155,6 +155,12 @@ def active_streams():
     """
 
     return services.streams.get_active_streams()
+
+
+@app.post("/webhook/{event}")
+async def webhook_callback(event: str, request: Request):
+    print(event, json.dumps(await request.json()))
+    return "OK"
 
 
 # Fave system v2
