@@ -15,6 +15,7 @@ from .SongIdProxy import SongIdProxy
 from .discogs import DiscogsApi
 from .brains import BotsuroBrains
 from .menus import AlbumMenus
+from .streams import StreamsService
 from .weather import WeatherService
 
 
@@ -35,6 +36,7 @@ class Services:
         self.notes = NoteSystem()
         self.ai_chat = AiChat()
         self.album_menus = AlbumMenus()
+        self.streams = StreamsService()
 
         # Services that require a special token or setup
         # =============================================

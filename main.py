@@ -146,6 +146,19 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
 
 # Fave system v2
 # ===================
+@app.get("/streams")
+def active_streams():
+    """
+    Fetch current live stream urls for consumption on the frontend
+
+    :return: A list of url strings for the available live streams
+    """
+
+    return services.streams.get_active_streams()
+
+
+# Fave system v2
+# ===================
 @app.get("/faves")
 def faves_for_user(user: str, level: Optional[str] = None, offset=0, count=10, sort_by="fave_date", sort_order="desc"):
     """
