@@ -47,5 +47,8 @@ class XiuServer:
                 for s in data
             ]
         except requests.ConnectionError:
-            print(f"ERROR: Error connecting to {self.management_host}")
+            print(f"ERROR: Error connecting to {self.management_host}/get_stream_status")
+            return []
+        except requests.JSONDecodeError:
+            print(f"ERROR: Could not parse JSON from {self.management_host}/get_stream_status")
             return []
