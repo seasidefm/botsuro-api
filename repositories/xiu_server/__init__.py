@@ -1,3 +1,7 @@
+"""
+A tiny wrapper for the Xiu service
+"""
+
 import os
 from typing import Optional
 
@@ -27,17 +31,21 @@ class XiuServer:
         Get the active streams from the xiu service
         :return:
         """
-        response = requests.get(f"{self.management_host}/get_stream_status", timeout=60)
+        try:
+            response = requests.get(f"{self.management_host}/get_stream_status", timeout=60)
 
-        if response.status_code != 200:
+            if response.status_code != 200:
+                return []
+
+            data = [Stream(**s) for s in response.json()]
+            print(data)
+            return [
+                self.botsuro_stream_url
+                + '/' + s.identifier.Rtmp.app_name
+                + '/' + s.identifier.Rtmp.stream_name
+                + '/' + 'test.m3u8'
+                for s in data
+            ]
+        except requests.ConnectionError:
+            print(f"ERROR: Error connecting to {self.management_host}")
             return []
-
-        data = [Stream(**s) for s in response.json()]
-        print(data)
-        return [
-            self.botsuro_stream_url
-            + '/' + s.identifier.Rtmp.app_name
-            + '/' + s.identifier.Rtmp.stream_name
-            + '/' + 'test.m3u8'
-            for s in data
-        ]
