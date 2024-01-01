@@ -65,7 +65,7 @@ class OpenAi:
         except Exception:
             print("Credentials not available")
 
-        return f"https://archives.seaside.fm/ai-image?generatedImage=https://cdn.botsu.ro/{object_key}"
+        return f"https://archives.botsu.ro/ai-image?generatedImage=https://cdn.botsu.ro/{object_key}"
 
     def get_tool_completion(
         self, model: Literal["default", "premium"] = None, messages=list
