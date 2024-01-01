@@ -11,6 +11,7 @@ class StoredSongModel(BaseModel):
     """
     A song stored in the database
     """
+
     _id: Optional[str]
     title: str
     artist: str

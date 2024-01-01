@@ -8,10 +8,7 @@ class NoteSystem:
         self.notes = Notes()
 
     def create_note_for_user(self, user_id: str, content: str):
-        inserted_note = self.notes.create_note(
-            user_id,
-            content
-        )
+        inserted_note = self.notes.create_note(user_id, content)
 
         return Note(
             _id=str(inserted_note),
@@ -19,7 +16,9 @@ class NoteSystem:
             content=content,
         )
 
-    def get_notes_for_user(self, user_id: str, offset=0, count=10, sort_by="created_at", sort_order="desc"):
+    def get_notes_for_user(
+        self, user_id: str, offset=0, count=10, sort_by="created_at", sort_order="desc"
+    ):
         return self.notes.get_notes_for_user(
             user_id,
             pagination=Pagination(
@@ -31,6 +30,4 @@ class NoteSystem:
         )
 
     def delete_note(self, note_id: str):
-        return self.notes.delete_note(
-            note_id
-        )
+        return self.notes.delete_note(note_id)

@@ -12,11 +12,8 @@ class IdentityMiddleware(BaseHTTPMiddleware):
     Add some identity to request state or throw an error if
     identity cannot be determined
     """
-    def __init__(
-            self,
-            app,
-            protected_routes: List[str]
-    ):
+
+    def __init__(self, app, protected_routes: List[str]):
         super().__init__(app)
         self.protected_routes = protected_routes
 

@@ -21,6 +21,7 @@ class FaveSong(BaseModel):
         fave_date (datetime): The date and time when the song was marked as a favorite.
 
     """
+
     user_id: str
     level: FaveLevel
     fave_date: datetime = Field(default_factory=datetime.now)

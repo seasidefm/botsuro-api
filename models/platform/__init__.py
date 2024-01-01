@@ -13,8 +13,9 @@ class PlatformEnum(enum.Enum):
         DISCORD: Represents the Discord platform.
         MINECRAFT: Represents the Minecraft platform.
     """
-    TWITCH = "TWITCH",
-    DISCORD = "DISCORD",
+
+    TWITCH = ("TWITCH",)
+    DISCORD = ("DISCORD",)
     MINECRAFT = "MINECRAFT"
 
     @classmethod
@@ -29,4 +30,3 @@ class PlatformEnum(enum.Enum):
         :rtype: PlatformEnum
         """
         return cls[platform.upper()]
-

@@ -42,8 +42,9 @@ class DataNormalization:
             max_tokens=100,
             messages=[
                 {"role": "system", "content": EQ_PROMPT},
-                {"role": "user", "content": f"{data1}\n\n{data2}"}
-            ])
+                {"role": "user", "content": f"{data1}\n\n{data2}"},
+            ],
+        )
 
         print(chat_completion.choices[0].message.content)
 
@@ -60,9 +61,13 @@ class DataNormalization:
         if prompt is None:
             prompt = "Normalize the following data:\n\n" + data + "\n\nNormalized data:"
 
-        chat_completion = self.client.chat.completions.create(model=self.model,
-                                                              messages=[{"role": "system", "content": prompt},
-                                                                        {"role": "user", "content": data}])
+        chat_completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": data},
+            ],
+        )
 
         print(chat_completion.choices[0].message.content)
 

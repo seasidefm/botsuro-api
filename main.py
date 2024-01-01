@@ -31,9 +31,7 @@ app = fastapi.FastAPI(docs_url="/docs", redoc_url="/redoc")
 
 templates = templating.Jinja2Templates(directory="templates")
 
-protected_routes = [
-    "/search/discogs"
-]
+protected_routes = ["/search/discogs"]
 
 app.add_middleware(IdentityMiddleware, protected_routes=protected_routes)
 
@@ -62,22 +60,13 @@ def health_check():
     song_id_okay, si_reason = services.song_id.health_check()
 
     return {
-        "botsuro": {
-            "status": "OK",
-            "reason": "No botsuro health check yet"
-        },
-        "discogs": {
-            "status": "OK" if discogs_okay else "DEGRADED",
-            "reason": d_reason
-        },
+        "botsuro": {"status": "OK", "reason": "No botsuro health check yet"},
+        "discogs": {"status": "OK" if discogs_okay else "DEGRADED", "reason": d_reason},
         "song_id": {
             "status": "OK" if song_id_okay else "DEGRADED",
-            "reason": si_reason
+            "reason": si_reason,
         },
-        "database": {
-            "status": "OK",
-            "reason": "No database health check yet"
-        },
+        "database": {"status": "OK", "reason": "No database health check yet"},
     }
 
 
@@ -117,7 +106,9 @@ def song_id_proxy(creator: str):
 
 
 @app.get("/obs/song")
-def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Optional[int] = 10):
+def obs_song_id_proxy(
+    request: fastapi.Request, creator: str, refresh_time: Optional[int] = 10
+):
     """
     Render the template for the song ID for a given song
     :param request:
@@ -141,7 +132,8 @@ def obs_song_id_proxy(request: fastapi.Request, creator: str, refresh_time: Opti
             "request": request,
             "song_string": song_string,
             "refresh_time": refresh_time,
-        })
+        },
+    )
 
 
 # Streaming
@@ -166,7 +158,14 @@ async def webhook_callback(event: str, request: Request):
 # Fave system v2
 # ===================
 @app.get("/faves")
-def faves_for_user(user: str, level: Optional[str] = None, offset=0, count=10, sort_by="fave_date", sort_order="desc"):
+def faves_for_user(
+    user: str,
+    level: Optional[str] = None,
+    offset=0,
+    count=10,
+    sort_by="fave_date",
+    sort_order="desc",
+):
     """
     Retrieves the favorite items for a given user at a specific level.
 
@@ -179,7 +178,9 @@ def faves_for_user(user: str, level: Optional[str] = None, offset=0, count=10, s
     :return: The favorite items for the given user at the specified level.
     """
 
-    return services.faves.get_faves_by_level(user, level, offset, count, sort_by, sort_order)
+    return services.faves.get_faves_by_level(
+        user, level, offset, count, sort_by, sort_order
+    )
 
 
 @app.post("/fave_this")
@@ -192,7 +193,9 @@ def fave_this(fave_input: FaveSongInput):
     """
 
     fave_status = services.faves.fave_this(fave_input.user, fave_input.level)
-    logger.info(f"User {fave_input.user} {fave_input.level}faved with status {fave_status}")
+    logger.info(
+        f"User {fave_input.user} {fave_input.level}faved with status {fave_status}"
+    )
 
     return fave_status
 
@@ -253,7 +256,9 @@ def get_album_menu(slug: str, bypass_cache="false"):
     Get a specific album menu from Sanity
     :return:
     """
-    return services.album_menus.get_album_menu(slug, bypass_cache=json.loads(bypass_cache))
+    return services.album_menus.get_album_menu(
+        slug, bypass_cache=json.loads(bypass_cache)
+    )
 
 
 # AI Personas
@@ -317,6 +322,7 @@ def ai_chat(query: str):
     """
     return services.ai_chat.get_bots()
 
+
 # AI Function callbacks
 # ===================
 @app.get("/discogs/price")
@@ -326,9 +332,7 @@ def discogs_price(album: str, artist: str, year: Optional[int] = None):
     :return:
     """
 
-    search_results = services.discogs_api.album_marketplace_data(
-        album, artist, year
-    )
+    search_results = services.discogs_api.album_marketplace_data(album, artist, year)
 
     return {"data": search_results}
 
@@ -339,4 +343,8 @@ def weather_for_lat_long(latitude: float, longitude: float, options: str):
     Attempt to get the weather for given coordinates
     :return:
     """
-    return {"data": services.weather.get_weather_for_coords(latitude, longitude, options.split(","))}
+    return {
+        "data": services.weather.get_weather_for_coords(
+            latitude, longitude, options.split(",")
+        )
+    }

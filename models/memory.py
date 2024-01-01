@@ -8,6 +8,7 @@ class Memory(BaseModel):
     """
     Memory model
     """
+
     created_at: datetime = None
     role: str
     content: str

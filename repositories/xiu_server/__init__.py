@@ -16,8 +16,12 @@ class XiuServer:
     """
 
     def __init__(self):
-        self.management_host = os.getenv("XIU_MANAGEMENT_API", "http://192.168.1.168:8001")
-        self.botsuro_stream_url = os.getenv("BOTSURO_STREAM_URL", "http://192.168.1.168:8081")
+        self.management_host = os.getenv(
+            "XIU_MANAGEMENT_API", "http://192.168.1.168:8001"
+        )
+        self.botsuro_stream_url = os.getenv(
+            "BOTSURO_STREAM_URL", "http://192.168.1.168:8081"
+        )
 
     def get_health(self) -> bool:
         """
@@ -32,7 +36,9 @@ class XiuServer:
         :return:
         """
         try:
-            response = requests.get(f"{self.management_host}/get_stream_status", timeout=60)
+            response = requests.get(
+                f"{self.management_host}/get_stream_status", timeout=60
+            )
 
             if response.status_code != 200:
                 return []
@@ -41,14 +47,21 @@ class XiuServer:
             print(data)
             return [
                 self.botsuro_stream_url
-                + '/' + s.identifier.Rtmp.app_name
-                + '/' + s.identifier.Rtmp.stream_name
-                + '/' + 'test.m3u8'
+                + "/"
+                + s.identifier.Rtmp.app_name
+                + "/"
+                + s.identifier.Rtmp.stream_name
+                + "/"
+                + "test.m3u8"
                 for s in data
             ]
         except requests.ConnectionError:
-            print(f"ERROR: Error connecting to {self.management_host}/get_stream_status")
+            print(
+                f"ERROR: Error connecting to {self.management_host}/get_stream_status"
+            )
             return []
         except requests.JSONDecodeError:
-            print(f"ERROR: Could not parse JSON from {self.management_host}/get_stream_status")
+            print(
+                f"ERROR: Could not parse JSON from {self.management_host}/get_stream_status"
+            )
             return []

@@ -36,7 +36,9 @@ class Sanity:
         """
 
         try:
-            query = self.encode_query(BOT_PERSONALITY_QUERY.format(PLATFORM=platform.lower()))
+            query = self.encode_query(
+                BOT_PERSONALITY_QUERY.format(PLATFORM=platform.lower())
+            )
             url = f"{self.base_url}?{query}"
             data = requests.get(url).json()
 
@@ -56,7 +58,7 @@ class Sanity:
             platform,
             key_prefix="bot_personality",
             # Cache for 20 minutes
-            cache_time=20 * 60
+            cache_time=20 * 60,
         )
 
     def _get_album_menus(self) -> AlbumMenuQueryResponse:
@@ -66,9 +68,11 @@ class Sanity:
         """
 
         try:
-            query = self.encode_query(ALBUM_MENUS_QUERY.format(
-                NAME_FILTER="",
-            ))
+            query = self.encode_query(
+                ALBUM_MENUS_QUERY.format(
+                    NAME_FILTER="",
+                )
+            )
             url = f"{self.base_url}?{query}"
             data = requests.get(url).json()
 
@@ -76,11 +80,7 @@ class Sanity:
 
         except KeyError:
             print("KeyError in _get_album_menus")
-            return AlbumMenuQueryResponse(
-                query="",
-                result=[],
-                ms=-1
-            )
+            return AlbumMenuQueryResponse(query="", result=[], ms=-1)
 
     # Album and Album menus
     def get_album_menus(self) -> AlbumMenuQueryResponse:
@@ -92,7 +92,7 @@ class Sanity:
             self._get_album_menus,
             key_prefix="album_menus",
             # Cache for 20 minutes
-            cache_time=20 * 60
+            cache_time=20 * 60,
         )
 
     def _get_unique_album_menu(self, menu_slug: str) -> Optional[AlbumMenuQueryResult]:
@@ -102,9 +102,11 @@ class Sanity:
         """
 
         try:
-            query = self.encode_query(ALBUM_MENUS_QUERY.format(
-                NAME_FILTER=f'&& menuSlug.current == "{menu_slug}"',
-            ))
+            query = self.encode_query(
+                ALBUM_MENUS_QUERY.format(
+                    NAME_FILTER=f'&& menuSlug.current == "{menu_slug}"',
+                )
+            )
             url = f"{self.base_url}?{query}"
             data = AlbumMenuQueryResponse(**requests.get(url).json())
 
@@ -116,7 +118,9 @@ class Sanity:
             print("KeyError in _get_unique_album_menu")
             return None
 
-    def get_unique_album_menu(self, menu_slug: str, bypass_cache=False) -> Optional[AlbumMenuQueryResult]:
+    def get_unique_album_menu(
+        self, menu_slug: str, bypass_cache=False
+    ) -> Optional[AlbumMenuQueryResult]:
         """
         Get a specific album menu from Sanity
         :return:
@@ -130,5 +134,5 @@ class Sanity:
             menu_slug,
             key_prefix="unique_albums",
             # Cache for 20 minutes
-            cache_time=20 * 60
+            cache_time=20 * 60,
         )

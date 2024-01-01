@@ -14,9 +14,7 @@ def get_cache():
     Get a cache instance
     :return:
     """
-    return Cache(
-        redis_string=os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    )
+    return Cache(redis_string=os.getenv("REDIS_URL", "redis://localhost:6379/0"))
 
 
 class Cache:
@@ -96,7 +94,12 @@ class Cache:
             return result
 
 
-def cached(cache: Cache = get_cache(), arg_key="key_arg", cache_time=15 * 60, namespace="default"):
+def cached(
+    cache: Cache = get_cache(),
+    arg_key="key_arg",
+    cache_time=15 * 60,
+    namespace="default",
+):
     """
     Decorator that caches the result of a function based on arguments using a cache object.
 
@@ -106,6 +109,7 @@ def cached(cache: Cache = get_cache(), arg_key="key_arg", cache_time=15 * 60, na
     :param namespace: Namespace to use for storing the cached result. Default is "default".
     :return: Decorated function that either returns the cached result or calls the original function and caches the result.
     """
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -115,17 +119,17 @@ def cached(cache: Cache = get_cache(), arg_key="key_arg", cache_time=15 * 60, na
 
                 cached_result = cache.get(key)
                 if cached_result is not None:
-                    print(f'Using cached result for argument {key}')
+                    print(f"Using cached result for argument {key}")
                     return cached_result
 
                 # Call the function and cache the result
                 result = func(*args, **kwargs)
-                print(f'Caching result for argument {key}')
+                print(f"Caching result for argument {key}")
                 cache.set(f"{namespace}:{key}", str(result), cache_time)
                 return result
 
             # Else, just call the function
-            logging.warning('No cache key argument %s found!', arg_key)
+            logging.warning("No cache key argument %s found!", arg_key)
             return func(*args, **kwargs)
 
         return wrapper

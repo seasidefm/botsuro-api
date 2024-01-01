@@ -23,11 +23,12 @@ class WeatherService:
     def __init__(self):
         self.openweather = OpenWeatherAPI()
 
-    def get_weather_for_coords(self,
-                               latitude: Union[str, float],
-                               longitude: Union[str, float],
-                               selected_data: List[str]
-                               ):
+    def get_weather_for_coords(
+        self,
+        latitude: Union[str, float],
+        longitude: Union[str, float],
+        selected_data: List[str],
+    ):
         """
         Get the weather for a given set of coordinates
         :param latitude:

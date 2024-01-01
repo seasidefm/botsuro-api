@@ -23,6 +23,7 @@ class Services:
     """
     The seaside Api services in one convenient dependency injection
     """
+
     def __init__(self):
         # Load the .env file HERE so the service initializations can
         # happen as needed below

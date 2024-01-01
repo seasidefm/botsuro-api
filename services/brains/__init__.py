@@ -60,7 +60,14 @@ class BotsuroBrains:
         """
 
         try:
-            self.memories.save(Memory(role="user", content=query, platform=platform, created_at=datetime.now()))
+            self.memories.save(
+                Memory(
+                    role="user",
+                    content=query,
+                    platform=platform,
+                    created_at=datetime.now(),
+                )
+            )
             prompt = self.get_personality(platform=platform)
 
             completion = self.ai.get_chat_completion(
@@ -68,17 +75,26 @@ class BotsuroBrains:
                 query,
                 model="premium",
                 max_tokens=max_tokens,
-                memories=self._get_memories(platform=platform)
+                memories=self._get_memories(platform=platform),
             )
 
             content = completion.choices[0].message.content
-            self.memories.save(Memory(role="assistant", content=content, platform=platform, created_at=datetime.now()))
+            self.memories.save(
+                Memory(
+                    role="assistant",
+                    content=content,
+                    platform=platform,
+                    created_at=datetime.now(),
+                )
+            )
 
             return ChatCompletion(content=content)
         except openai.InternalServerError as e:
             print("CAUGHT ERROR: ", e)
-            return ChatCompletion(content="I'm sorry, I'm having trouble thinking right now. Can you ask me again in "
-                                          "a few minutes? (OpenAI is probably down)")
+            return ChatCompletion(
+                content="I'm sorry, I'm having trouble thinking right now. Can you ask me again in "
+                "a few minutes? (OpenAI is probably down)"
+            )
 
     def save_memory(self, memory: Memory):
         """

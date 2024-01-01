@@ -37,7 +37,9 @@ class AiChat:
         self.models = boto3.client("lexv2-models", region_name="us-west-2")
         # bedrock models
         self.bedrock = boto3.client(service_name="bedrock", region_name="us-west-2")
-        self.bedrock_runtime = boto3.client(service_name="bedrock-runtime", region_name="us-west-2")
+        self.bedrock_runtime = boto3.client(
+            service_name="bedrock-runtime", region_name="us-west-2"
+        )
 
     def get_bots(self) -> list:
         return self.models.list_bots().get("botSummaries", [])
@@ -45,29 +47,27 @@ class AiChat:
     def get_bedrock_models(self) -> list:
         return [
             *self.bedrock.list_custom_models().get("modelSummaries", []),
-            self.bedrock.list_foundation_models().get("modelSummaries", [])
+            self.bedrock.list_foundation_models().get("modelSummaries", []),
         ]
 
     def test_completion(self, query: str):
         messages = [
-            {
-                "sender": "SYSTEM",
-                "message": temp_prompt
-            },
-            {
-                "sender": "USER",
-                "message": query
-            },
+            {"sender": "SYSTEM", "message": temp_prompt},
+            {"sender": "USER", "message": query},
         ]
 
-        prompt = "".join([f"\n\n{message['sender']}:{message['message']}" for message in messages])
+        prompt = "".join(
+            [f"\n\n{message['sender']}:{message['message']}" for message in messages]
+        )
 
-        body = json.dumps({
-            "prompt": f"{prompt}\n\nASSISTANT:",
-            # "max_tokens_to_sample": 300,
-            "temperature": 0.1,
-            "top_p": 0.9,
-        })
+        body = json.dumps(
+            {
+                "prompt": f"{prompt}\n\nASSISTANT:",
+                # "max_tokens_to_sample": 300,
+                "temperature": 0.1,
+                "top_p": 0.9,
+            }
+        )
 
         response = self.bedrock_runtime.invoke_model(
             modelId=SELECTED_MODEL,
@@ -76,7 +76,7 @@ class AiChat:
             contentType="application/json",
         )
 
-        print(json.loads(response.get('body').read()))
+        print(json.loads(response.get("body").read()))
 
         return "check console"
 
@@ -87,7 +87,7 @@ class AiChat:
             localeId="en_US",
             sessionId="twitch",
             messages=[],
-            sessionState={}
+            sessionState={},
         )
 
         print(response)

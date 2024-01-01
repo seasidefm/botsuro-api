@@ -20,7 +20,7 @@ class Video(BaseModel):
     level: str
     width: int
     height: int
-    bitrate_kbits_s_: float = Field(..., alias='bitrate(kbits/s)')
+    bitrate_kbits_s_: float = Field(..., alias="bitrate(kbits/s)")
     frame_rate: int
     gop: int
 
@@ -30,7 +30,7 @@ class Audio(BaseModel):
     profile: str
     samplerate: int
     channels: int
-    bitrate_kbits_s_: float = Field(..., alias='bitrate(kbits/s)')
+    bitrate_kbits_s_: float = Field(..., alias="bitrate(kbits/s)")
 
 
 class Stream(BaseModel):

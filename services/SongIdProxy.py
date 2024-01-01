@@ -6,6 +6,7 @@ class SongIdProxy:
     """
     API wrapper for connecting to Song ID
     """
+
     def __init__(self, endpoint: str):
         self.endpoint = endpoint
 

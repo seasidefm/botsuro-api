@@ -11,7 +11,7 @@ class Memories:
     """
 
     def __init__(self):
-        self.collection = DatabaseConn().get_collection('Memory')
+        self.collection = DatabaseConn().get_collection("Memory")
 
     def save(self, memory: Memory):
         """
@@ -22,7 +22,9 @@ class Memories:
         """
         self.collection.insert_one(memory.dict())
 
-    def get_memories(self, platform: Literal["TWITCH", "DISCORD", "MINECRAFT"], count: int = 10):
+    def get_memories(
+        self, platform: Literal["TWITCH", "DISCORD", "MINECRAFT"], count: int = 10
+    ):
         """
         Retrieve memories from the database for a specific platform.
 
@@ -32,11 +34,9 @@ class Memories:
         """
 
         memories = [
-            Memory(**doc) for doc in self.collection
-            .find({
-                "platform": platform
-            })
-            .sort('created_at', -1)
+            Memory(**doc)
+            for doc in self.collection.find({"platform": platform})
+            .sort("created_at", -1)
             .limit(count)
         ]
         memories.reverse()

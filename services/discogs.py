@@ -18,24 +18,29 @@ def release_to_dict(release: discogs_client.Release) -> dict:
         "marketplace_stats": {
             "num_for_sale": mp_stats.num_for_sale,
             "lowest_price": f"{mp_stats.lowest_price.value} {mp_stats.lowest_price.currency}",
-        }
+        },
     }
 
 
 def release_has_results(release: discogs_client.Release) -> bool:
-    return release.marketplace_stats.num_for_sale is not None and release.marketplace_stats.num_for_sale > 0
+    return (
+        release.marketplace_stats.num_for_sale is not None
+        and release.marketplace_stats.num_for_sale > 0
+    )
 
 
 class DiscogsApi:
     """
     API wrapper for connecting to Discogs
     """
+
     base_url: str = "https://api.discogs.com"
 
-    def __init__(self,
-                 access_token: str,
-                 user_agent="SeasideAPI/2.0 +https://twitch.tv/seasidefm"
-                 ):
+    def __init__(
+        self,
+        access_token: str,
+        user_agent="SeasideAPI/2.0 +https://twitch.tv/seasidefm",
+    ):
         self.access_token = access_token
         self.user_agent = user_agent
         self.client = discogs_client.Client(
@@ -45,7 +50,7 @@ class DiscogsApi:
     def _get_headers(self):
         return {
             "Authorization": f"Discogs token={self.access_token}",
-            "User-Agent": self.user_agent
+            "User-Agent": self.user_agent,
         }
 
     def health_check(self):
@@ -54,9 +59,7 @@ class DiscogsApi:
         :return:
         """
         res = requests.get(
-            headers=self._get_headers(),
-            url=f"{self.base_url}/",
-            timeout=15
+            headers=self._get_headers(), url=f"{self.base_url}/", timeout=15
         )
 
         logger.info("Discogs status code: %s", res.status_code)
@@ -70,9 +73,9 @@ class DiscogsApi:
 
         return res.status_code == 200, reason
 
-    def album_marketplace_data(self,
-                               album: str, artist: str,
-                               year: Optional[int]) -> List[dict]:
+    def album_marketplace_data(
+        self, album: str, artist: str, year: Optional[int]
+    ) -> List[dict]:
         """
         Search discogs for albums and artists matching this
         :param artist:
@@ -82,12 +85,10 @@ class DiscogsApi:
         :return:
         """
 
-        releases = self.client.search(
-            f"{artist} {album}",
-            type="release",
-            per_page=5
-        )
+        releases = self.client.search(f"{artist} {album}", type="release", per_page=5)
 
-        rel_with_listings = filter(lambda release: release_has_results(release), releases)
+        rel_with_listings = filter(
+            lambda release: release_has_results(release), releases
+        )
 
         return [release_to_dict(release) for release in rel_with_listings]
