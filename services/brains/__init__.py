@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 import openai
@@ -70,23 +71,60 @@ class BotsuroBrains:
             )
             prompt = self.get_personality(platform=platform)
 
+            memories = self._get_memories(platform=platform)
             completion = self.ai.get_chat_completion(
                 prompt,
                 query,
                 model="premium",
                 max_tokens=max_tokens,
-                memories=self._get_memories(platform=platform),
+                memories=memories,
             )
 
-            content = completion.choices[0].message.content
-            self.memories.save(
-                Memory(
-                    role="assistant",
-                    content=content,
-                    platform=platform,
-                    created_at=datetime.now(),
+            message = completion.choices[0].message
+            content = "I tried to call a function"
+            if not message.function_call:
+                content = completion.choices[0].message.content
+                print(content)
+                self.memories.save(
+                    Memory(
+                        role="assistant",
+                        content=content,
+                        platform=platform,
+                        created_at=datetime.now(),
+                    )
                 )
-            )
+            else:
+                print(f"processing function - {message.function_call.name}")
+                match message.function_call.name:
+                    case "generate_image":
+                        args = json.loads(message.function_call.arguments)
+                        url = self.ai.get_image_generation(args.get("prompt"))
+                        content = f"Here's your generated image! {url}"
+
+                        # completion = self.ai.get_tool_completion(
+                        #     model="premium",
+                        #     messages=[
+                        #         *[
+                        #             {"role": memory.role, "content": memory.content}
+                        #             for memory in memories
+                        #         ],
+                        #         # TODO: Save this
+                        #         {
+                        #             "role": "function",
+                        #             "content": "Image generated! Please see lower in the chat",
+                        #             "name": message.function_call.name,
+                        #             # "content": json.dumps(
+                        #             #     {
+                        #             #         "image_url": url,
+                        #             #         "image_host": "s3",
+                        #             #         "original_prompt": args.get("prompt"),
+                        #             #     }
+                        #             # ),
+                        #         },
+                        #     ],
+                        # )
+
+                        # content = completion.choices[0].message.content + f" - {url}"
 
             return ChatCompletion(content=content)
         except openai.InternalServerError as e:

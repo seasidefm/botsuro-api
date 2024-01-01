@@ -1,7 +1,5 @@
 from typing import Optional
 from pydantic import BaseModel
-from pymongo.collection import Collection
-from redis import Redis
 
 from repositories.database_conn import DatabaseConn
 from repositories.mem_cache import MemCache
@@ -20,8 +18,8 @@ class EmoteDB(BaseModel):
 
 
 class EmoteCRUD:
-    def __init__(self, collection: Collection, cache: Redis):
-        self.collection = DatabaseConn().get_collection("Faves")
+    def __init__(self):
+        self.collection = DatabaseConn().get_collection("Emotes")
         self.cache = MemCache.from_env()
 
     def create_emote(self, emote: EmoteDB) -> EmoteDB:
@@ -34,22 +32,25 @@ class EmoteCRUD:
         cached_emote = self.cache.get(emote_id)
         if cached_emote:
             return EmoteDB(**cached_emote)
-        else:
-            emote_data = self.collection.find_one({"id": emote_id})
-            if emote_data:
-                emote_model = EmoteDB(**emote_data)
-                self.cache.set(emote_id, emote_data)
-                return emote_model
+
+        emote_data = self.collection.find_one({"id": emote_id})
+        if emote_data:
+            emote_model = EmoteDB(**emote_data)
+            self.cache.set(emote_id, emote_data)
+            return emote_model
+
         return None
 
     def update_emote(self, emote_id: str, emote: EmoteDB) -> Optional[EmoteDB]:
         existing_emote = self.read_emote(emote_id)
+
         if existing_emote:
             updated_data = emote.dict(exclude_unset=True)
             self.collection.update_one({"id": emote_id}, {"$set": updated_data})
             updated_emote = existing_emote.copy(update=updated_data)
             self.cache.set(emote_id, updated_data)
             return updated_emote
+
         return None
 
     def delete_emote(self, emote_id: str) -> Optional[EmoteDB]:
