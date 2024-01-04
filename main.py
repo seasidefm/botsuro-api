@@ -14,6 +14,7 @@ from config import LogConfig
 from middleware.identity import IdentityMiddleware
 from models.faves import FaveSongInput
 from models.notes import NewNoteInput
+from models.streams.events import BaseEvent
 from services import Services
 
 # Config
@@ -149,9 +150,12 @@ def active_streams():
     return services.streams.get_active_streams()
 
 
-@app.post("/webhook/{event}")
+@app.post("/stream_hook/{event}")
 async def webhook_callback(event: str, request: Request):
-    print(event, json.dumps(await request.json()))
+    event_data = BaseEvent(**(await request.json()))
+
+    # TODO: Handle this event data - storing it in a TS db or something?
+    print(event_data)
     return "OK"
 
 

@@ -79,3 +79,13 @@ class MemCache:
         """
         self.redis.set(key, value)
         self.redis.expire(key, cache_time)
+
+    def delete(self, key: str):
+        """
+        Delete a value from the cache.
+
+        :param key: The key to be deleted.
+        :type key: str
+        :return: None
+        """
+        self.redis.delete(key)
