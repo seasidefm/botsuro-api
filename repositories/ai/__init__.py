@@ -65,7 +65,13 @@ class OpenAi:
         except Exception:
             print("Credentials not available")
 
-        return f"https://archives.botsu.ro/ai-image?generatedImage=https://cdn.botsu.ro/{object_key}"
+        revised_prompt = response.data[0].revised_prompt
+        url = f"https://archives.botsu.ro/ai-image?generatedImage=https://cdn.botsu.ro/{object_key}"
+
+        if revised_prompt:
+            return f"revised prompt used to generate this image - {revised_prompt} | url - {url}"
+
+        return url
 
     def get_tool_completion(
         self, model: Literal["default", "premium"] = None, messages=list

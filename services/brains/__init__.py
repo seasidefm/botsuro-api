@@ -98,8 +98,8 @@ class BotsuroBrains:
                 match message.function_call.name:
                     case "generate_image":
                         args = json.loads(message.function_call.arguments)
-                        url = self.ai.get_image_generation(args.get("prompt"))
-                        content = f"Here's your generated image! {url}"
+                        response = self.ai.get_image_generation(args.get("prompt"))
+                        content = f"Here's your generated image! {response}"
 
                         # completion = self.ai.get_tool_completion(
                         #     model="premium",
